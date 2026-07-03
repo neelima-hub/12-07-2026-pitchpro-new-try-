@@ -118,6 +118,21 @@ import {
               <Lock class="h-3.5 w-3.5 text-gray-500 lock-icon" />
             </button>
           </nav>
+
+          <!-- Divider -->
+          <div class="h-px bg-white/10 my-4"></div>
+
+          <!-- History Trigger Button -->
+          <button 
+            id="btn-open-history"
+            class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+            type="button"
+          >
+            <span class="flex items-center space-x-3">
+              <Clock class="h-4.5 w-4.5 text-pitchpro-accent" />
+              <span>My Saved Decks</span>
+            </span>
+          </button>
         </div>
 
         <!-- Bottom Profile/Exit -->
@@ -674,6 +689,51 @@ import {
   <div id="app-toast" class="fixed bottom-6 right-6 z-50 bg-[#0B0B0F] border border-white/15 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2 text-xs font-semibold translate-y-20 opacity-0 transition-all duration-300">
     <Sparkles class="h-4 w-4 text-pitchpro-accent" />
     <span id="toast-message" class="text-white">Action completed successfully</span>
+  </div>
+
+  <!-- Saved Decks Drawer Overlay -->
+  <div id="history-drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"></div>
+  
+  <!-- Saved Decks Drawer -->
+  <div 
+    id="history-drawer" 
+    class="fixed top-0 right-0 h-full w-full max-w-md bg-[#0F0F14] border-l border-white/10 z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl"
+  >
+    <!-- Drawer Header -->
+    <div class="p-6 border-b border-white/10 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <Clock class="h-5 w-5 text-pitchpro-accent" />
+        <h2 class="font-heading font-bold text-lg text-white">My Saved Decks</h2>
+      </div>
+      <button 
+        id="btn-close-history" 
+        class="text-gray-400 hover:text-white p-1 hover:bg-white/5 rounded-lg transition-colors focus:outline-none"
+        aria-label="Close Saved Decks"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Drawer Content -->
+    <div class="flex-1 overflow-y-auto p-6">
+      <!-- Loading State -->
+      <div id="history-loading" class="flex flex-col items-center justify-center py-12 text-gray-500 space-y-3">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-pitchpro-accent"></div>
+        <p class="text-xs font-mono">Loading saved decks...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="history-empty" class="hidden flex flex-col items-center justify-center py-12 text-center text-gray-500 space-y-3">
+        <Clock class="h-10 w-10 text-gray-600 mb-2" />
+        <p class="text-sm font-semibold text-white">No saved decks found</p>
+        <p class="text-xs max-w-[240px] mt-1 text-gray-400 leading-relaxed">Generate a new pitch deck to save it automatically to your history.</p>
+      </div>
+
+      <!-- Decks List -->
+      <div id="history-list" class="space-y-3"></div>
+    </div>
   </div>
 
   <!-- Dynamic Dashboard Script -->
@@ -1746,6 +1806,7 @@ import {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js" is:inline></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" is:inline></script>
   <script>
+    import { supabase } from '../lib/supabase';
     declare var html2pdf: any;
     declare var pdfjsLib: any;
     declare var mammoth: any;
@@ -1839,6 +1900,184 @@ import {
           }, 3000);
         }
       };
+
+      // My Saved Decks / History Drawer State and Functions
+      const btnOpenHistory = document.getElementById('btn-open-history');
+      const btnCloseHistory = document.getElementById('btn-close-history');
+      const historyDrawer = document.getElementById('history-drawer');
+      const historyDrawerOverlay = document.getElementById('history-drawer-overlay');
+      const historyLoading = document.getElementById('history-loading');
+      const historyEmpty = document.getElementById('history-empty');
+      const historyList = document.getElementById('history-list');
+
+      const toggleHistoryDrawer = (show: boolean) => {
+        if (show) {
+          historyDrawerOverlay?.classList.remove('hidden');
+          // Trigger layout reflow for animation
+          historyDrawerOverlay?.clientWidth;
+          historyDrawerOverlay?.classList.remove('opacity-0');
+          historyDrawerOverlay?.classList.add('opacity-100');
+          
+          historyDrawer?.classList.remove('translate-x-full');
+          loadSavedDecks();
+        } else {
+          historyDrawerOverlay?.classList.add('opacity-0');
+          historyDrawerOverlay?.classList.remove('opacity-100');
+          historyDrawer?.classList.add('translate-x-full');
+          setTimeout(() => {
+            if (historyDrawer?.classList.contains('translate-x-full')) {
+              historyDrawerOverlay?.classList.add('hidden');
+            }
+          }, 300);
+        }
+      };
+
+      btnOpenHistory?.addEventListener('click', () => toggleHistoryDrawer(true));
+      btnCloseHistory?.addEventListener('click', () => toggleHistoryDrawer(false));
+      historyDrawerOverlay?.addEventListener('click', () => toggleHistoryDrawer(false));
+
+      const loadSavedDecks = async () => {
+        if (!historyLoading || !historyEmpty || !historyList) return;
+
+        historyLoading.classList.remove('hidden');
+        historyEmpty.classList.add('hidden');
+        historyList.innerHTML = '';
+
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) {
+            historyLoading.classList.add('hidden');
+            historyEmpty.classList.remove('hidden');
+            return;
+          }
+
+          const { data, error } = await supabase
+            .from('pitch_decks')
+            .select('id, created_at, deck_json')
+            .order('created_at', { ascending: false });
+
+          historyLoading.classList.add('hidden');
+
+          if (error) {
+            console.error('Error fetching history:', error);
+            historyList.innerHTML = `<p class="text-xs text-red-500 font-mono">Failed to load history: ${error.message}</p>`;
+            return;
+          }
+
+          if (!data || data.length === 0) {
+            historyEmpty.classList.remove('hidden');
+            return;
+          }
+
+          historyList.innerHTML = data.map((item: any) => {
+            const deck = item.deck_json;
+            const companyName = deck?.companyName || 'Untitled Project';
+            const slideCount = deck?.slides?.length || 0;
+            const dateStr = new Date(item.created_at).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+
+            return `
+              <div 
+                class="bg-white/[0.03] border border-white/5 hover:border-[#6C63FF]/40 rounded-xl p-4 cursor-pointer hover:bg-white/[0.06] transition-all group history-deck-card"
+                data-id="${item.id}"
+              >
+                <div class="flex items-start justify-between">
+                  <div class="min-w-0 flex-1 pr-2">
+                    <p class="text-sm font-bold text-white group-hover:text-[#6C63FF] transition-colors truncate">${companyName}</p>
+                    <p class="text-[10px] text-gray-500 mt-1">Generated on ${dateStr}</p>
+                  </div>
+                  <span class="text-[9px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded font-mono font-bold shrink-0">
+                    ${slideCount} SLIDES
+                  </span>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          // Add click listeners to history cards
+          const cards = historyList.querySelectorAll('.history-deck-card');
+          cards.forEach(card => {
+            card.addEventListener('click', () => {
+              const deckId = card.getAttribute('data-id');
+              const selectedRecord = data.find((r: any) => r.id === deckId);
+              if (selectedRecord && selectedRecord.deck_json) {
+                // Close drawer
+                toggleHistoryDrawer(false);
+                
+                // Inject deck_json into view
+                const savedDeck = selectedRecord.deck_json;
+                
+                // Set variables
+                generationDone = true;
+                unlockTabs();
+                
+                // Render the deck
+                renderDeck(savedDeck);
+                
+                // Hide logs/terminal if switching tabs
+                const terminalContainer = document.getElementById('terminal-logs');
+                if (terminalContainer) {
+                  terminalContainer.innerHTML = '<p class="text-green-400 font-mono"><span class="text-pitchpro-accent">&gt;</span> Loaded saved deck: ' + savedDeck.companyName + '</p>';
+                }
+
+                // Fallback render executive summary / Q&A
+                const firstSlide = savedDeck.slides?.[0];
+                const fallbackSummary = `This executive summary represents a fully structured presentation deck for ${savedDeck.companyName}. It captures key problem statements, market sizes, and solution descriptions outlined across the ${savedDeck.slides?.length || 0} slide components.`;
+                const fallbackPitch = firstSlide?.title || `Welcome to ${savedDeck.companyName}. We are ready to present our pitch.`;
+                
+                renderSummary(savedDeck.companyName, fallbackSummary, fallbackPitch);
+
+                const fallbackQuestions = [
+                  {
+                    id: "Q1",
+                    question: `What is the core problem ${savedDeck.companyName} is trying to solve?`,
+                    reasonForAsking: "Verify problem validity and size of the pain point.",
+                    idealAnswerFramework: "Start by quantifying the problem using the points in Slide 2. State the number of affected users and the direct financial impact."
+                  },
+                  {
+                    id: "Q2",
+                    question: `How does your solution stand out from existing competitors?`,
+                    reasonForAsking: "Establish competitive moat and differentiation.",
+                    idealAnswerFramework: "Cite the specific differentiators mentioned in the Solution slides. Emphasize your unique technological advantage."
+                  },
+                  {
+                    id: "Q3",
+                    question: `What is the target market and initial go-to-market strategy?`,
+                    reasonForAsking: "Evaluate market feasibility and acquisition channels.",
+                    idealAnswerFramework: "Reference the market analysis slides. Define your Beachhead market clearly and outline your CAC/LTV projections."
+                  }
+                ];
+                renderQA(fallbackQuestions);
+
+                // Show Toast
+                showToastMessage(`Loaded saved deck: ${savedDeck.companyName}`);
+
+                // Switch to Pitch Deck Tab
+                const navDeck = document.getElementById('nav-deck');
+                if (navDeck) {
+                  navDeck.click();
+                }
+              }
+            });
+          });
+
+        } catch (err) {
+          console.error('Unexpected error loading saved decks:', err);
+          if (historyLoading) historyLoading.classList.add('hidden');
+          if (historyList) historyList.innerHTML = `<p class="text-xs text-red-500 font-mono">An error occurred while fetching saved decks.</p>`;
+        }
+      };
+
+      // Load on initial load if logged in
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          loadSavedDecks();
+        }
+      });
 
       // Override Tab Switcher Logic to bypass the old module-scoped block-check
       const tabButtons = document.querySelectorAll('.nav-item-btn');
@@ -2704,13 +2943,11 @@ import {
             renderSummary(deckJSON.companyName, copyJSON.executiveSummary, copyJSON.elevatorPitch);
             renderQA(qaJSON.predictedJudgeQuestions);
 
-            // Log: Generation Complete. Assets unlocked.
-            appendLog('// Generation Complete. Assets unlocked.');
-
             // Unlock the dashboard tabs
             generationDone = true;
             unlockTabs();
             showToastMessage("Analysis Complete! All pitch materials unlocked.");
+            loadSavedDecks();
 
             // Auto-switch to Pitch Deck tab
             const navDeck = document.getElementById('nav-deck');
