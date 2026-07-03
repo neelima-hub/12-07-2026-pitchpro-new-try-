@@ -1,0 +1,35 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { 
+	title = "PitchPro - AI Pitch Deck & Rehearsal Coach", 
+	description = "Transform raw ideas, research, and startup concepts into competition-ready, investor-grade pitches in minutes using advanced AI."
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/jpeg" href="/logo.jpeg" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		
+		<!-- Open Graph / Social Media -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content="/logo.jpeg" />
+		
+		<title>{title}</title>
+	</head>
+	<body class="bg-pitchpro-dark text-white antialiased">
+		<slot />
+	</body>
+</html>

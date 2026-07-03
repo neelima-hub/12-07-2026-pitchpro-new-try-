@@ -1,0 +1,2734 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { 
+  FileText, 
+  Sparkles, 
+  Layers, 
+  Mic, 
+  Lock, 
+  ChevronRight, 
+  ChevronLeft,
+  Download, 
+  Copy, 
+  Check, 
+  ArrowLeft,
+  Play,
+  Square,
+  RefreshCw,
+  Award,
+  HelpCircle,
+  Clock,
+  Volume2,
+  Info
+} from 'lucide-astro';
+---
+
+<Layout title="PitchPro App - AI Rehearsal & Deck Builder">
+  
+  <!-- App Container -->
+  <div class="h-screen w-screen flex flex-col md:flex-row bg-[#0B0B0F] text-white overflow-hidden font-body">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-[#0B0B0F] border-b md:border-b-0 md:border-r border-white/10 flex flex-col shrink-0">
+      
+      <!-- Top Header (Logo and hamburger button on mobile) -->
+      <div class="p-4 sm:p-6 flex md:block items-center justify-between shrink-0">
+        <!-- Logo -->
+        <a href="/" class="flex items-center space-x-3">
+          <img 
+            src="/logo.jpeg" 
+            alt="PitchPro Logo" 
+            class="h-8 w-8 rounded-lg object-cover border border-white/10" 
+          />
+          <span class="font-heading font-bold text-lg tracking-tight text-white">
+            PitchPro
+          </span>
+          <span class="text-[9px] bg-pitchpro-accent/20 text-pitchpro-accent px-1.5 py-0.5 rounded font-mono font-bold">
+            PROTOTYPE
+          </span>
+        </a>
+
+        <!-- Hamburger button for mobile dashboard navigation -->
+        <button 
+          id="app-sidebar-toggle" 
+          class="flex md:hidden items-center justify-center p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all focus:outline-none"
+          aria-label="Toggle Navigation"
+        >
+          <svg id="app-hamburger-icon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="app-close-icon" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Collapsible Navigation and Profile Panel -->
+      <div id="app-sidebar-menu" class="hidden md:flex flex-col flex-1 justify-between">
+        <div class="px-4 sm:px-6 pb-6">
+          <!-- Navigation Tabs -->
+          <nav class="space-y-1.5" id="app-nav">
+            <button 
+              id="nav-upload"
+              class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold bg-white/10 text-white transition-all nav-item-btn"
+              data-tab="upload"
+            >
+              <span class="flex items-center space-x-3">
+                <FileText class="h-4.5 w-4.5 text-pitchpro-accent" />
+                <span>1. Upload & Analyze</span>
+              </span>
+            </button>
+
+            <button 
+              id="nav-deck"
+              class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all opacity-60 nav-item-btn"
+              data-tab="deck"
+              disabled
+            >
+              <span class="flex items-center space-x-3">
+                <Layers class="h-4.5 w-4.5" />
+                <span>2. Pitch Deck</span>
+              </span>
+              <Lock class="h-3.5 w-3.5 text-gray-500 lock-icon" />
+            </button>
+
+            <button 
+              id="nav-coach"
+              class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all opacity-60 nav-item-btn"
+              data-tab="coach"
+              disabled
+            >
+              <span class="flex items-center space-x-3">
+                <Mic class="h-4.5 w-4.5" />
+                <span>3. Rehearsal Coach</span>
+              </span>
+              <Lock class="h-3.5 w-3.5 text-gray-500 lock-icon" />
+            </button>
+
+            <button 
+              id="nav-summary"
+              class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all opacity-60 nav-item-btn"
+              data-tab="summary"
+              disabled
+            >
+              <span class="flex items-center space-x-3">
+                <FileText class="h-4.5 w-4.5" />
+                <span>4. Executive Summary</span>
+              </span>
+              <Lock class="h-3.5 w-3.5 text-gray-500 lock-icon" />
+            </button>
+          </nav>
+        </div>
+
+        <!-- Bottom Profile/Exit -->
+        <div class="p-4 sm:p-6 border-t border-white/5 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-full bg-pitchpro-accent/20 border border-pitchpro-accent/30 flex items-center justify-center font-bold text-xs text-pitchpro-accent">
+              F
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-white">Founder Account</p>
+              <p class="text-[10px] text-gray-500">Free Sandbox</p>
+            </div>
+          </div>
+          <a href="/" class="text-xs text-gray-500 hover:text-white transition-colors flex items-center">
+            <ArrowLeft class="h-3.5 w-3.5 mr-1" /> Exit
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Workspace Area -->
+    <main class="flex-1 flex flex-col bg-[#111116] overflow-y-auto p-4 sm:p-6 lg:p-8">
+      
+      <!-- Top Alert Banner -->
+      <div id="unlocked-banner" class="hidden mb-6 bg-pitchpro-success/15 border border-pitchpro-success/30 rounded-xl px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2 text-pitchpro-success">
+          <Sparkles class="h-4 w-4 shrink-0" />
+          <span class="text-xs font-semibold">AI Analysis Complete! All features are unlocked. Switch tabs using the sidebar.</span>
+        </div>
+        <button id="close-banner" class="text-pitchpro-success hover:text-white text-xs font-bold px-2 py-0.5 rounded hover:bg-white/5">
+          Close
+        </button>
+      </div>
+
+      <!-- ================== TAB 1: UPLOAD & ANALYZE ================== -->
+      <section id="tab-content-upload" class="app-tab-panel flex flex-col gap-6 max-w-4xl">
+        <div class="flex flex-col gap-2">
+          <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-white">
+            Upload Your Innovation
+          </h1>
+          <p class="text-xs sm:text-sm text-gray-400">
+            Provide a pitch draft, research brief, or startup description. Our AI will analyze problem vectors, target markets, and generate your pitch assets.
+          </p>
+        </div>
+
+        <!-- Inputs Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+          
+          <!-- Dropzone and Text Field (Spans 3 cols) -->
+          <div class="md:col-span-3 flex flex-col gap-4">
+            
+            <!-- Upload Box -->
+            <div 
+              id="file-dropzone"
+              class="border-2 border-dashed border-white/10 hover:border-pitchpro-accent/40 rounded-2xl p-6 sm:p-8 text-center bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer flex flex-col items-center justify-center min-h-[160px]"
+            >
+              <FileText class="h-10 w-10 text-pitchpro-accent mb-3" />
+              <p class="text-sm font-bold text-white mb-1">Drag and drop your project draft</p>
+              <p class="text-xs text-gray-500">Supports PDF, DOCX, TXT (Max 15MB)</p>
+              <input type="file" id="file-input" class="hidden" accept=".pdf,.docx,.txt" />
+            </div>
+
+            <!-- Startup Brand Details -->
+            <div class="grid grid-cols-1 gap-5 bg-white/[0.02] border border-white/5 rounded-2xl p-4 sm:p-5">
+              <div class="flex flex-col gap-1.5">
+                <label for="startup-name" class="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Startup Name <span class="text-pitchpro-accent font-bold">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="startup-name" 
+                  required
+                  placeholder="e.g., PitchPro AI"
+                  class="w-full bg-white/[0.03] border border-white/10 focus:border-pitchpro-accent focus:ring-1 focus:ring-pitchpro-accent rounded-xl p-3 text-xs sm:text-sm text-white placeholder-gray-600 outline-none font-mono"
+                />
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label for="brand-color-1" class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
+                    <span>Primary Color (Color 1) <span class="text-pitchpro-accent font-bold">*</span></span>
+                    <span id="color-1-preview-text" class="text-[10px] text-gray-500 font-mono">#6C63FF</span>
+                  </label>
+                  <div class="flex gap-2">
+                    <div class="relative w-12 h-10 rounded-xl overflow-hidden border border-white/10 shrink-0 bg-white/[0.03]">
+                      <input 
+                        type="color" 
+                        id="brand-color-1-picker" 
+                        value="#6C63FF" 
+                        class="absolute inset-0 w-full h-full p-0 border-0 cursor-pointer opacity-100 bg-transparent"
+                      />
+                    </div>
+                    <input 
+                      type="text" 
+                      id="brand-color-1" 
+                      required
+                      value="#6C63FF"
+                      placeholder="#6C63FF"
+                      maxlength="7"
+                      class="w-full bg-white/[0.03] border border-white/10 focus:border-pitchpro-accent focus:ring-1 focus:ring-pitchpro-accent rounded-xl p-3 text-xs sm:text-sm text-white outline-none font-mono"
+                    />
+                  </div>
+                </div>
+                
+                <div class="flex flex-col gap-1.5">
+                  <label for="brand-color-2" class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
+                    <span>Secondary Color (Color 2) <span class="text-pitchpro-accent font-bold">*</span></span>
+                    <span id="color-2-preview-text" class="text-[10px] text-gray-500 font-mono">#3DDC97</span>
+                  </label>
+                  <div class="flex gap-2">
+                    <div class="relative w-12 h-10 rounded-xl overflow-hidden border border-white/10 shrink-0 bg-white/[0.03]">
+                      <input 
+                        type="color" 
+                        id="brand-color-2-picker" 
+                        value="#3DDC97" 
+                        class="absolute inset-0 w-full h-full p-0 border-0 cursor-pointer opacity-100 bg-transparent"
+                      />
+                    </div>
+                    <input 
+                      type="text" 
+                      id="brand-color-2" 
+                      required
+                      value="#3DDC97"
+                      placeholder="#3DDC97"
+                      maxlength="7"
+                      class="w-full bg-white/[0.03] border border-white/10 focus:border-pitchpro-accent focus:ring-1 focus:ring-pitchpro-accent rounded-xl p-3 text-xs sm:text-sm text-white outline-none font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-1.5">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Theme Background Mode
+                </span>
+                <div class="flex gap-4 mt-1">
+                  <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-white">
+                    <input type="radio" name="theme-mode" value="Dark Mode" checked class="accent-pitchpro-accent" />
+                    <span>Dark Mode</span>
+                  </label>
+                  <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-white">
+                    <input type="radio" name="theme-mode" value="Light Mode" class="accent-pitchpro-accent" />
+                    <span>Light Mode</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Text Area Alternative -->
+            <div class="flex flex-col gap-2 bg-white/[0.02] border border-white/5 rounded-2xl p-4 sm:p-5">
+              <label for="concept-text" class="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                Or describe your idea in detail
+              </label>
+              <textarea 
+                id="concept-text"
+                rows="6"
+                maxlength="10000"
+                placeholder="PitchPro is an AI-powered SaaS platform that helps students and founders turn raw concepts into venture-ready presentations. The core problem is that technologists fail to translate their engineering into commercial impact. We generate slides, pitch speech drafts, and provide an audio rehearsal scoring dashboard..."
+                class="w-full bg-white/[0.03] border border-white/10 focus:border-pitchpro-accent focus:ring-1 focus:ring-pitchpro-accent rounded-xl p-3 text-xs sm:text-sm text-white placeholder-gray-600 outline-none resize-none font-mono"
+              ></textarea>
+            </div>
+
+            <!-- Start Button -->
+            <button 
+              id="btn-run-analysis"
+              class="w-full py-3.5 bg-pitchpro-accent hover:bg-pitchpro-accent-hover text-white rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-pitchpro-accent/15 transition-all"
+            >
+              <Sparkles class="h-4.5 w-4.5" />
+              <span>Run AI Analyzer</span>
+            </button>
+          </div>
+
+          <!-- Loading Terminal Logs (Spans 2 cols) -->
+          <div class="md:col-span-2 bg-[#08080C] border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[300px]">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+                <span class="text-xs font-bold text-gray-400 tracking-wide uppercase font-heading flex items-center">
+                  <Clock class="h-3.5 w-3.5 text-pitchpro-accent mr-1.5" />
+                  AI Process Logs
+                </span>
+                <span id="analysis-badge" class="text-[9px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded font-mono">
+                  STANDBY
+                </span>
+              </div>
+
+              <!-- Log Rows Container -->
+              <div class="space-y-2.5 font-mono text-[10px] text-gray-400 overflow-y-auto max-h-[220px] pr-1" id="terminal-logs">
+                <p class="text-gray-500">// Ready to ingest document...</p>
+              </div>
+            </div>
+
+            <!-- Big Glowing Progress Circle -->
+            <div class="mt-4 pt-4 border-t border-white/5 flex items-center space-x-4">
+              <div class="relative w-12 h-12 flex items-center justify-center shrink-0">
+                <!-- Rotating Spinner -->
+                <div id="loader-ring" class="absolute inset-0 rounded-full border-2 border-white/5 border-t-pitchpro-accent transition-transform duration-300"></div>
+                <Sparkles id="loader-icon" class="h-4.5 w-4.5 text-gray-600 transition-colors" />
+              </div>
+              <div>
+                <p id="loader-status" class="text-xs font-bold text-gray-400">Waiting for trigger</p>
+                <p id="loader-progress" class="text-[10px] text-gray-600">0% complete</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== TAB 2: PITCH DECK VIEW ================== -->
+      <section id="tab-content-deck" class="app-tab-panel hidden flex-col gap-6 max-w-5xl">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex flex-col gap-1">
+            <h1 class="text-2xl font-heading font-extrabold text-white">Generated Pitch Deck</h1>
+            <p class="text-xs text-gray-400">AI structured layout. Click outline slides or use buttons to navigate.</p>
+          </div>
+        </div>
+
+        <!-- Workspace Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          
+          <!-- Slide Navigation Sidebar -->
+          <div class="lg:col-span-1 flex flex-row overflow-x-auto lg:flex-col lg:overflow-x-visible gap-2 pb-3 lg:pb-0 scrollbar-none" id="slide-selectors-container">
+            <button class="slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border border-pitchpro-accent bg-pitchpro-accent/10 text-white transition-all flex items-center space-x-3 text-xs font-bold" data-slide="0">
+              <span class="w-5 h-5 rounded bg-pitchpro-accent text-white flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
+              <span class="truncate">Cover & Vision</span>
+            </button>
+            <button class="slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border border-white/5 hover:bg-white/5 text-gray-400 hover:text-white transition-all flex items-center space-x-3 text-xs font-bold" data-slide="1">
+              <span class="w-5 h-5 rounded bg-white/10 text-gray-400 flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
+              <span class="truncate">Core Problem</span>
+            </button>
+            <button class="slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border border-white/5 hover:bg-white/5 text-gray-400 hover:text-white transition-all flex items-center space-x-3 text-xs font-bold" data-slide="2">
+              <span class="w-5 h-5 rounded bg-white/10 text-gray-400 flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
+              <span class="truncate">The Solution</span>
+            </button>
+            <button class="slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border border-white/5 hover:bg-white/5 text-gray-400 hover:text-white transition-all flex items-center space-x-3 text-xs font-bold" data-slide="3">
+              <span class="w-5 h-5 rounded bg-white/10 text-gray-400 flex items-center justify-center text-[10px] font-bold shrink-0">4</span>
+              <span class="truncate">Market & TAM</span>
+            </button>
+            <button class="slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border border-white/5 hover:bg-white/5 text-gray-400 hover:text-white transition-all flex items-center space-x-3 text-xs font-bold" data-slide="4">
+              <span class="w-5 h-5 rounded bg-white/10 text-gray-400 flex items-center justify-center text-[10px] font-bold shrink-0">5</span>
+              <span class="truncate">Business Model</span>
+            </button>
+            <button class="slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border border-white/5 hover:bg-white/5 text-gray-400 hover:text-white transition-all flex items-center space-x-3 text-xs font-bold" data-slide="5">
+              <span class="w-5 h-5 rounded bg-white/10 text-gray-400 flex items-center justify-center text-[10px] font-bold shrink-0">6</span>
+              <span class="truncate">The Ask / Call</span>
+            </button>
+          </div>
+
+          <!-- Slide Presentation Viewport (Spans 3 cols) -->
+          <div class="lg:col-span-3 flex flex-col gap-4">
+            
+            <!-- Slide Controls Toolbar -->
+            <div id="slide-controls-toolbar" class="hidden flex-wrap items-center justify-between gap-4 bg-white/[0.02] border border-white/5 rounded-2xl p-3 sm:p-4 text-xs text-gray-300 select-none">
+              <div class="flex items-center gap-3">
+                <span class="font-bold text-gray-400 uppercase tracking-wider text-[10px]">Alignment</span>
+                <div class="flex bg-white/[0.03] p-1 rounded-xl border border-white/10">
+                  <button type="button" id="btn-align-left" class="px-3.5 py-1.5 rounded-lg hover:bg-white/5 active:bg-white/10 transition-all font-mono font-bold text-gray-400 hover:text-white">Left</button>
+                  <button type="button" id="btn-align-center" class="px-3.5 py-1.5 rounded-lg hover:bg-white/5 active:bg-white/10 transition-all font-mono font-bold text-gray-400 hover:text-white">Center</button>
+                  <button type="button" id="btn-align-right" class="px-3.5 py-1.5 rounded-lg hover:bg-white/5 active:bg-white/10 transition-all font-mono font-bold text-gray-400 hover:text-white">Right</button>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 flex-1 sm:flex-initial">
+                <span class="font-bold text-gray-400 uppercase tracking-wider text-[10px] whitespace-nowrap">Text Sizing</span>
+                <input type="range" id="input-text-sizing" min="0.8" max="1.3" step="0.05" value="1" class="w-full sm:w-36 accent-pitchpro-accent h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+                <span id="text-sizing-val" class="font-mono text-[10px] text-gray-400 w-12 text-right">1.00x</span>
+              </div>
+            </div>
+
+            <!-- Slide Board (16:9 Aspect Ratio) -->
+            <div id="slide-canvas" class="aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#0B0B0F] border border-gray-800/60 shadow-[0_0_0_1px_rgba(255,255,255,0.01)] p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none">
+              
+              <!-- Background highlights -->
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(108,99,255,0.06),transparent_60%)] pointer-events-none"></div>
+              
+               <!-- Dynamic Slide Content Areas (Javascript Swaps) -->
+              <div class="flex-1 py-6 flex flex-col justify-center text-left" id="slide-dynamic-content">
+                <!-- Slide 0: Cover -->
+                <div class="slide-page-element">
+                  <div class="inline-block bg-pitchpro-accent/15 text-pitchpro-accent text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-md mb-4 border border-pitchpro-accent/25">
+                    Startup pitch
+                  </div>
+                  <h2 class="text-2xl sm:text-4.5xl font-heading font-extrabold text-white leading-tight max-w-2xl mb-4" id="deck-title-render">
+                    PitchPro: The AI-Powered Presentation Suite
+                  </h2>
+                  <p class="text-xs sm:text-base text-gray-400 max-w-xl">
+                    Transforming raw technology specs, drafts, and case briefs into investor-winning pitches in minutes.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Slide Footer -->
+              <div class="flex justify-between items-center text-[9px] text-gray-500 border-t border-white/5 pt-4">
+                <span>Confidential - For Review Only</span>
+                <div class="flex items-center space-x-3">
+                  <span id="slide-theme-indicator"></span>
+                  <span id="slide-counter-badge" class="text-[9px] font-mono bg-white/5 px-2 py-0.5 rounded text-gray-400">SLIDE 1/6</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Slide Navigation Actions -->
+            <div class="flex justify-between items-center bg-[#09090C] border border-white/10 rounded-xl px-4 py-3">
+              <button id="btn-slide-prev" class="inline-flex items-center text-xs font-semibold text-gray-400 hover:text-white transition-colors py-1">
+                <ChevronLeft class="h-4 w-4 mr-1" /> Previous Slide
+              </button>
+              <div class="flex items-center space-x-1.5" id="slide-dots">
+                <span class="w-1.5 h-1.5 rounded-full bg-pitchpro-accent"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-white/20"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-white/20"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-white/20"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-white/20"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-white/20"></span>
+              </div>
+              <button id="btn-slide-next" class="inline-flex items-center text-xs font-semibold text-gray-400 hover:text-white transition-colors py-1">
+                Next Slide <ChevronRight class="h-4 w-4 ml-1" />
+              </button>
+            </div>
+
+            <!-- Presenter Notes Section -->
+            <div id="presenter-notes-container" class="bg-[#09090C] border border-white/10 rounded-xl p-5 mt-2 hidden flex-col gap-3">
+              <h4 class="text-xs font-bold text-pitchpro-accent uppercase tracking-wider">Presenter Notes</h4>
+              <div class="space-y-3 text-xs text-gray-300">
+                <div>
+                  <span class="text-[9px] text-gray-500 font-mono uppercase block mb-1">Storytelling Purpose</span>
+                  <p id="presenter-story-purpose" class="italic leading-relaxed text-gray-400"></p>
+                </div>
+                <div class="pt-3 border-t border-white/5">
+                  <span class="text-[9px] text-gray-500 font-mono uppercase block mb-1">Founder Script</span>
+                  <p id="presenter-spoken-text" class="leading-relaxed font-mono text-gray-200 whitespace-pre-wrap"></p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== TAB 3: REHEARSAL COACH ================== -->
+      <section id="tab-content-coach" class="app-tab-panel hidden flex-col gap-6 max-w-5xl">
+        <div class="flex flex-col gap-1">
+          <h1 class="text-2xl font-heading font-extrabold text-white">AI Rehearsal Coach</h1>
+          <p class="text-xs text-gray-400">Speak into your mic to rehearse your pitch slides. Our coach tracks filler words, pacing speed, and generates scoring feedback.</p>
+        </div>
+
+        <!-- Coach Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          
+          <!-- Rehearsal Controls / Transcript (3 cols) -->
+          <div class="lg:col-span-3 flex flex-col gap-5">
+            
+            <!-- Voice Waves Panel -->
+            <div class="bg-[#09090C] border border-white/10 rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                  <Volume2 class="h-4 w-4 mr-1 text-pitchpro-accent" /> Live Input Monitor
+                </span>
+                <span id="coach-rec-indicator" class="text-[9px] font-mono bg-white/5 text-gray-400 px-2 py-0.5 rounded flex items-center">
+                  <span class="w-1.5 h-1.5 rounded-full bg-gray-500 mr-1.5" id="rec-dot"></span>
+                  <span id="rec-text">READY</span>
+                </span>
+              </div>
+
+              <!-- Rehearsal Wave Canvas -->
+              <div class="h-28 bg-[#040406] rounded-xl flex items-center justify-center relative overflow-hidden">
+                <canvas id="wave-canvas" class="absolute inset-0 w-full h-full"></canvas>
+                <div id="mic-prompt-text" class="text-xs text-gray-500 z-10 flex flex-col items-center">
+                  <Mic class="h-8 w-8 mb-2 text-white/20" />
+                  <span>Click "Start Rehearsal" to enable microphone</span>
+                </div>
+              </div>
+
+              <!-- Mic Action Button -->
+              <div class="flex gap-3">
+                <button 
+                  id="btn-coach-start"
+                  class="flex-1 py-3 bg-pitchpro-accent hover:bg-pitchpro-accent-hover text-white rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-pitchpro-accent/15 transition-all"
+                >
+                  <Play class="h-4.5 w-4.5 fill-white" />
+                  <span>Start Rehearsal</span>
+                </button>
+                <button 
+                  id="btn-coach-stop"
+                  class="flex-1 py-3 bg-red-500/20 hover:bg-red-500 hover:text-white text-red-400 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all"
+                  disabled
+                >
+                  <Square class="h-4.5 w-4.5 fill-current" />
+                  <span>Stop & Score</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Speech To Text Logs -->
+            <div class="bg-[#09090C] border border-white/10 rounded-2xl p-5 flex flex-col gap-3 h-48">
+              <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Live Rehearsal Transcript</span>
+              <div class="bg-[#040406] border border-white/5 rounded-xl p-3.5 h-28 overflow-y-auto text-xs sm:text-sm text-gray-400 font-mono" id="rehearsal-transcript-box">
+                <span class="text-gray-600">// Transcript will write here in real time as you talk...</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Coach Metrics Scoring (2 cols) -->
+          <div class="lg:col-span-2 flex flex-col gap-5">
+            
+            <!-- Realtime Metrics counters -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-[#09090C] border border-white/10 rounded-xl p-3.5 text-center">
+                <span class="text-[10px] text-gray-500 uppercase tracking-wide">Pacing Rate</span>
+                <p class="text-xl sm:text-2xl font-bold text-white mt-1" id="metric-wpm">-- WPM</p>
+                <p class="text-[9px] text-gray-500 mt-1" id="metric-wpm-label">Ready</p>
+              </div>
+              <div class="bg-[#09090C] border border-white/10 rounded-xl p-3.5 text-center">
+                <span class="text-[10px] text-gray-500 uppercase tracking-wide">Filler Words</span>
+                <p class="text-xl sm:text-2xl font-bold text-white mt-1" id="metric-fillers">0</p>
+                <p class="text-[9px] text-gray-500 mt-1" id="metric-fillers-label">"um, like, uh, so"</p>
+              </div>
+            </div>
+
+            <!-- Scorecard Panel -->
+            <div id="coach-scorecard" class="bg-[#09090C] border border-white/10 rounded-2xl p-5 flex flex-col gap-4 opacity-50 transition-opacity">
+              <div class="flex items-center justify-between pb-3 border-b border-white/5">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                  <Award class="h-4.5 w-4.5 text-pitchpro-accent mr-1.5" /> Performance Scorecard
+                </span>
+                <span id="scorecard-unlocked-tag" class="text-[9px] bg-white/5 text-gray-500 px-1.5 py-0.5 rounded font-mono">LOCKED</span>
+              </div>
+
+              <!-- Overall Score Ring -->
+              <div class="flex items-center space-x-5">
+                <div class="relative w-16 h-16 rounded-full border-4 border-white/5 flex items-center justify-center shrink-0">
+                  <span class="text-lg font-extrabold text-gray-400 font-mono" id="scorecard-total">--</span>
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-white" id="scorecard-title">Pending Analysis</h4>
+                  <p class="text-[10px] text-gray-400 leading-normal" id="scorecard-desc">Finish a speaking rehearsal first to generate scoring logs.</p>
+                </div>
+              </div>
+
+              <!-- Meters -->
+              <div class="space-y-3 pt-2">
+                <div>
+                  <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                    <span>Clarity & Tone</span>
+                    <span id="score-meter-1-val">0%</span>
+                  </div>
+                  <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div id="score-meter-1" class="h-full bg-pitchpro-accent w-0 transition-all duration-1000"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                    <span>Speaking Pacing</span>
+                    <span id="score-meter-2-val">0%</span>
+                  </div>
+                  <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div id="score-meter-2" class="h-full bg-pitchpro-accent w-0 transition-all duration-1000"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-[10px] text-gray-400 mb-1 items-center">
+                    <span class="flex items-center">
+                      Storytelling Arc
+                      <span class="inline-flex items-center cursor-pointer text-gray-500 hover:text-gray-300 ml-1.5" title="Estimated score: calculated based on the percentage of slide title keywords mentioned in your speech.">
+                        <Info class="h-3 w-3" />
+                      </span>
+                    </span>
+                    <span id="score-meter-3-val">0%</span>
+                  </div>
+                  <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div id="score-meter-3" class="h-full bg-pitchpro-accent w-0 transition-all duration-1000"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Full-Width Mock Judge Q&A Section -->
+        <div class="bg-[#09090C] border border-white/10 rounded-2xl p-6 flex flex-col gap-4 mt-6">
+          <span class="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center">
+            <HelpCircle class="h-4.5 w-4.5 text-pitchpro-accent mr-1.5" /> Predicted Judge Q&A
+          </span>
+          <div class="space-y-3.5 max-h-[600px] overflow-y-auto pr-1" id="judge-qa-container">
+            <p class="text-xs text-gray-500 italic">// Questions will unlock post-rehearsal...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== TAB 4: EXECUTIVE SUMMARY ================== -->
+      <section id="tab-content-summary" class="app-tab-panel hidden flex-col gap-6 max-w-4xl">
+        <div class="flex flex-col gap-1">
+          <h1 class="text-2xl font-heading font-extrabold text-white">Executive Summaries & Elevator Pitches</h1>
+          <p class="text-xs text-gray-400">Copy-paste ready texts formulated from your input document for email outreach and elevator speeches.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Executive Summary -->
+          <div class="bg-[#09090C] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                  <FileText class="h-4.5 w-4.5 text-pitchpro-accent mr-1.5" /> Executive Summary
+                </span>
+                <button class="btn-copy-text text-gray-500 hover:text-white p-1 rounded hover:bg-white/5 transition-all" data-target="exec-text-area">
+                  <Copy class="h-4 w-4" />
+                </button>
+              </div>
+              <div class="text-xs leading-relaxed text-gray-300 space-y-3 font-mono bg-[#040406] p-4 rounded-xl max-h-[300px] overflow-y-auto" id="exec-text-area">
+                <p class="text-white font-bold"># EXECUTIVE SUMMARY: PITCHPRO</p>
+                <p><span class="text-gray-500">Problem:</span> Pitch creators struggle to turn technical specifications into compelling value narratives. This results in lost investment grants, VC seed funding, and corporate buy-in.</p>
+                <p><span class="text-gray-500">Solution:</span> PitchPro is an AI-powered SaaS offering automated, slide deck mapping and live speech coaching analysis using microphone feedback mechanics.</p>
+                <p><span class="text-gray-500">TAM:</span> The global presentations market is estimated at $8B annually, targeting 15M early-stage student founders, grant writers, and academic researchers.</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/5 flex justify-between items-center text-[10px] text-gray-500">
+              <span>Length: 215 words</span>
+              <span>Tone: Professional Investor</span>
+            </div>
+          </div>
+
+          <!-- Elevator Pitch -->
+          <div class="bg-[#09090C] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                  <Volume2 class="h-4.5 w-4.5 text-pitchpro-accent mr-1.5" /> 30-Second Elevator Pitch
+                </span>
+                <button class="btn-copy-text text-gray-500 hover:text-white p-1 rounded hover:bg-white/5 transition-all" data-target="elevator-text-area">
+                  <Copy class="h-4 w-4" />
+                </button>
+              </div>
+              <div class="text-xs leading-relaxed text-gray-300 space-y-3 font-mono bg-[#040406] p-4 rounded-xl max-h-[300px] overflow-y-auto" id="elevator-text-area">
+                <p class="italic text-gray-400">"Every year, brilliant builders fail to secure funding simply because they struggle to explain their ideas. At PitchPro, we bridge this translation gap. By uploading any project, our AI instantly structures a winning pitch deck and lets you rehearse live with an interactive speech coach. We turn raw innovation into investor-ready presentations in under five minutes. Give your ideas the presentation they deserve."</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/5 flex justify-between items-center text-[10px] text-gray-500">
+              <span>Duration: ~30 seconds</span>
+              <span>Words: 75</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Toast Notification (Simulated) -->
+  <div id="app-toast" class="fixed bottom-6 right-6 z-50 bg-[#0B0B0F] border border-white/15 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2 text-xs font-semibold translate-y-20 opacity-0 transition-all duration-300">
+    <Sparkles class="h-4 w-4 text-pitchpro-accent" />
+    <span id="toast-message" class="text-white">Action completed successfully</span>
+  </div>
+
+  <!-- Dynamic Dashboard Script -->
+  <script>
+    import { supabase } from '../lib/supabase';
+
+    // Client-side authentication guard
+    async function checkAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.href = '/login?redirect=/app';
+      }
+    }
+    checkAuth();
+
+    // Tab switching state
+    let analysisState = 'idle'; // idle | analyzing | done
+    let analyzedProjectTitle = 'PitchPro Presentation';
+    let activeTabName = 'upload';
+
+    // UI elements
+    const tabButtons = document.querySelectorAll('.nav-item-btn');
+    const tabPanels = document.querySelectorAll('.app-tab-panel');
+    const unlockedBanner = document.getElementById('unlocked-banner');
+    const closeBannerBtn = document.getElementById('close-banner');
+    
+    const navDeckBtn = document.getElementById('nav-deck') as HTMLButtonElement;
+    const navCoachBtn = document.getElementById('nav-coach') as HTMLButtonElement;
+    const navSummaryBtn = document.getElementById('nav-summary') as HTMLButtonElement;
+
+    // App Sidebar Mobile Toggle logic
+    const appSidebarToggle = document.getElementById('app-sidebar-toggle');
+    const appSidebarMenu = document.getElementById('app-sidebar-menu');
+    const appHamburgerIcon = document.getElementById('app-hamburger-icon');
+    const appCloseIcon = document.getElementById('app-close-icon');
+
+    if (appSidebarToggle && appSidebarMenu && appHamburgerIcon && appCloseIcon) {
+      appSidebarToggle.addEventListener('click', () => {
+        const isHidden = appSidebarMenu.classList.contains('hidden');
+        if (isHidden) {
+          appSidebarMenu.classList.remove('hidden');
+          appSidebarMenu.classList.add('flex');
+          appHamburgerIcon.classList.add('hidden');
+          appCloseIcon.classList.remove('hidden');
+        } else {
+          appSidebarMenu.classList.add('hidden');
+          appSidebarMenu.classList.remove('flex');
+          appHamburgerIcon.classList.remove('hidden');
+          appCloseIcon.classList.add('hidden');
+        }
+      });
+
+      // Close menu on mobile when a tab selector button is clicked
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (window.innerWidth < 768) {
+            appSidebarMenu.classList.add('hidden');
+            appSidebarMenu.classList.remove('flex');
+            appHamburgerIcon.classList.remove('hidden');
+            appCloseIcon.classList.add('hidden');
+          }
+        });
+      });
+    }
+
+    // Toast function
+    function showToast(msg: string) {
+      const toast = document.getElementById('app-toast');
+      const toastMsg = document.getElementById('toast-message');
+      if (toast && toastMsg) {
+        toastMsg.textContent = msg;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0');
+          toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 3000);
+      }
+    }
+
+    // Tab switcher
+    function switchTab(targetTab: string) {
+      // Check if locked
+      if (targetTab !== 'upload' && analysisState !== 'done') {
+        showToast("Please run the AI Analysis first to unlock this feature!");
+        return;
+      }
+
+      activeTabName = targetTab;
+
+      // Update Nav Buttons
+      tabButtons.forEach(btn => {
+        const t = btn.getAttribute('data-tab');
+        if (t === targetTab) {
+          btn.classList.add('bg-white/10', 'text-white');
+          btn.classList.remove('text-gray-400', 'hover:bg-white/5');
+        } else {
+          btn.classList.remove('bg-white/10', 'text-white');
+          if (btn.hasAttribute('disabled')) {
+            btn.classList.add('text-gray-400');
+          } else {
+            btn.classList.add('text-gray-400', 'hover:bg-white/5');
+          }
+        }
+      });
+
+      // Update Panels
+      tabPanels.forEach(panel => {
+        const p = panel.getAttribute('id');
+        if (p === `tab-content-${targetTab}`) {
+          panel.classList.remove('hidden');
+          panel.classList.add('flex');
+        } else {
+          panel.classList.add('hidden');
+          panel.classList.remove('flex');
+        }
+      });
+    }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-tab');
+        if (target) switchTab(target);
+      });
+    });
+
+    if (closeBannerBtn && unlockedBanner) {
+      closeBannerBtn.addEventListener('click', () => {
+        unlockedBanner.classList.add('hidden');
+      });
+    }
+
+    // ==========================================
+    // TAB 1: AI ANALYSIS SIMULATION
+    // ==========================================
+    const btnRunAnalysis = document.getElementById('btn-run-analysis');
+    const textareaConcept = document.getElementById('concept-text') as HTMLTextAreaElement;
+    const fileDropzone = document.getElementById('file-dropzone');
+    const fileInput = document.getElementById('file-input') as HTMLInputElement;
+    const terminalLogs = document.getElementById('terminal-logs');
+    const loaderRing = document.getElementById('loader-ring');
+    const loaderIcon = document.getElementById('loader-icon');
+    const loaderStatus = document.getElementById('loader-status');
+    const loaderProgress = document.getElementById('loader-progress');
+    const analysisBadge = document.getElementById('analysis-badge');
+
+    // PDF and DOCX file parser helper functions
+    const parsePDF = (typedarray: Uint8Array) => {
+      try {
+        const pdfjsLibInstance = (window as any)['pdfjs-dist/build/pdf'];
+        if (!pdfjsLibInstance) {
+          throw new Error("PDF.js library not loaded yet.");
+        }
+        pdfjsLibInstance.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        
+        pdfjsLibInstance.getDocument({ data: typedarray }).promise.then((pdf: any) => {
+          const maxPages = pdf.numPages;
+          const pagePromises = [];
+          
+          for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+            pagePromises.push(
+              pdf.getPage(pageNum).then((page: any) => {
+                return page.getTextContent().then((textContent: any) => {
+                  return textContent.items.map((item: any) => item.str).join(' ');
+                });
+              })
+            );
+          }
+          
+          Promise.all(pagePromises).then((pagesText) => {
+            const cleanText = pagesText.join('\n\n').trim();
+            if (textareaConcept) {
+              textareaConcept.value = cleanText || "Error: No text content found in PDF.";
+              textareaConcept.disabled = false;
+            }
+            showToast("PDF parsed successfully!");
+          }).catch((err) => {
+            console.error("PDF page parsing failed:", err);
+            if (textareaConcept) {
+              textareaConcept.value = "Error: Failed to extract text from PDF.";
+              textareaConcept.disabled = false;
+            }
+            showToast("Error extracting PDF text.");
+          });
+        }).catch((err: any) => {
+          console.error("PDF load failed:", err);
+          if (textareaConcept) {
+            textareaConcept.value = "Error: Failed to load PDF file.";
+            textareaConcept.disabled = false;
+          }
+          showToast("Error loading PDF document.");
+        });
+      } catch (err) {
+        console.error("PDF parser error:", err);
+        if (textareaConcept) {
+          textareaConcept.value = "Error: PDF parser library not available.";
+          textareaConcept.disabled = false;
+        }
+      }
+    };
+
+    const parseDOCX = (arrayBuffer: ArrayBuffer) => {
+      try {
+        const mammothLibInstance = (window as any).mammoth;
+        if (!mammothLibInstance) {
+          throw new Error("Mammoth library not loaded yet.");
+        }
+        mammothLibInstance.extractRawText({ arrayBuffer: arrayBuffer })
+          .then((result: any) => {
+            const text = result.value ? result.value.trim() : "";
+            if (textareaConcept) {
+              textareaConcept.value = text || "Error: No text content found in Word document.";
+              textareaConcept.disabled = false;
+            }
+            showToast("Word document parsed successfully!");
+          })
+          .catch((err: any) => {
+            console.error("Mammoth DOCX parsing failed:", err);
+            if (textareaConcept) {
+              textareaConcept.value = "Error: Failed to parse Word document.";
+              textareaConcept.disabled = false;
+            }
+            showToast("Error parsing Word document.");
+          });
+      } catch (err) {
+        console.error("Mammoth DOCX parser error:", err);
+        if (textareaConcept) {
+          textareaConcept.value = "Error: Word document parser library not available.";
+          textareaConcept.disabled = false;
+        }
+      }
+    };
+
+    const handleFile = (file: File) => {
+      const name = file.name.toLowerCase();
+      const isPDF = name.endsWith('.pdf');
+      const isDOCX = name.endsWith('.docx');
+      
+      if (!isPDF && !isDOCX) {
+        showToast("Error: Unsupported format. Only PDF and DOCX files are accepted.");
+        return;
+      }
+      
+      const maxSize = 4 * 1024 * 1024; // 4 MB
+      if (file.size > maxSize) {
+        showToast("Error: File too large. Maximum size allowed is 4MB.");
+        return;
+      }
+      
+      showToast(`Parsing "${file.name}"... Please wait.`);
+      if (textareaConcept) {
+        textareaConcept.value = "Reading and extracting text from document... Please wait.";
+        textareaConcept.disabled = true;
+      }
+      
+      const reader = new FileReader();
+      if (isPDF) {
+        reader.onload = function(evt) {
+          const typedarray = new Uint8Array(evt.target?.result as ArrayBuffer);
+          parsePDF(typedarray);
+        };
+        reader.readAsArrayBuffer(file);
+      } else if (isDOCX) {
+        reader.onload = function(evt) {
+          const arrayBuffer = evt.target?.result as ArrayBuffer;
+          parseDOCX(arrayBuffer);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    };
+
+    if (fileDropzone && fileInput) {
+      fileDropzone.addEventListener('click', () => fileInput.click());
+      
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files[0]) {
+          handleFile(fileInput.files[0]);
+        }
+      });
+      
+      fileDropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileDropzone.classList.add('border-pitchpro-accent', 'bg-pitchpro-accent/5');
+      });
+      
+      fileDropzone.addEventListener('dragleave', () => {
+        fileDropzone.classList.remove('border-pitchpro-accent', 'bg-pitchpro-accent/5');
+      });
+      
+      fileDropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileDropzone.classList.remove('border-pitchpro-accent', 'bg-pitchpro-accent/5');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+    }
+
+    function addLog(text: string, delay: number, nextCall: () => void) {
+      setTimeout(() => {
+        if (terminalLogs) {
+          const row = document.createElement('p');
+          row.className = 'text-green-400 font-mono animate-fade-in';
+          row.innerHTML = `<span class="text-pitchpro-accent">&gt;</span> ${text}`;
+          terminalLogs.appendChild(row);
+          terminalLogs.scrollTop = terminalLogs.scrollHeight;
+        }
+        nextCall();
+      }, delay);
+    }
+
+    if (btnRunAnalysis) {
+      btnRunAnalysis.addEventListener('click', () => {
+        if (analysisState === 'analyzing') return;
+        
+        analysisState = 'analyzing';
+        if (analysisBadge) {
+          analysisBadge.textContent = 'RUNNING';
+          analysisBadge.className = 'text-[9px] bg-pitchpro-accent/20 text-pitchpro-accent px-1.5 py-0.5 rounded font-mono font-bold';
+        }
+        if (loaderRing) loaderRing.classList.add('animate-spin', 'border-t-pitchpro-accent');
+        if (loaderIcon) loaderIcon.classList.add('text-pitchpro-accent');
+        if (loaderStatus) loaderStatus.textContent = 'Ingesting Brief...';
+        if (loaderProgress) loaderProgress.textContent = '10% complete';
+
+        // Read title
+        let textVal = textareaConcept ? textareaConcept.value : '';
+        if (textVal.trim()) {
+          const firstLine = textVal.split('\n')[0];
+          if (firstLine.length < 40) analyzedProjectTitle = firstLine.replace(/Uploaded Project Draft:\s*/, '');
+        }
+
+        if (terminalLogs) terminalLogs.innerHTML = '<p class="text-gray-500">// Initiating compilation run...</p>';
+
+        addLog("Initializing PitchPro AI Engine v4.0.2...", 500, () => {
+          if (loaderStatus) loaderStatus.textContent = 'Parsing Problem Statements...';
+          if (loaderProgress) loaderProgress.textContent = '35%';
+          
+          addLog("Parsing document syntax structures...", 800, () => {
+            if (loaderStatus) loaderStatus.textContent = 'Evaluating Market Models...';
+            if (loaderProgress) loaderProgress.textContent = '55%';
+            
+            addLog("Extracting problem statements & market TAM variables...", 800, () => {
+              if (loaderStatus) loaderStatus.textContent = 'Synthesizing Deck Themes...';
+              if (loaderProgress) loaderProgress.textContent = '75%';
+              
+              addLog("Configuring 6 slide layouts matching Obsidian theme...", 800, () => {
+                if (loaderStatus) loaderStatus.textContent = 'Compiling Speech Cards...';
+                if (loaderProgress) loaderProgress.textContent = '90%';
+                
+                addLog("Formulating speech transcripts & mock judge cards...", 700, () => {
+                  if (loaderStatus) loaderStatus.textContent = 'Ready!';
+                  if (loaderProgress) loaderProgress.textContent = '100% complete';
+                  if (loaderRing) loaderRing.classList.remove('animate-spin');
+                  if (loaderIcon) {
+                    loaderIcon.classList.remove('text-pitchpro-accent');
+                    loaderIcon.classList.add('text-pitchpro-success');
+                  }
+                  
+                  analysisState = 'done';
+                  if (analysisBadge) {
+                    analysisBadge.textContent = 'COMPLETE';
+                    analysisBadge.className = 'text-[9px] bg-pitchpro-success/20 text-pitchpro-success px-1.5 py-0.5 rounded font-mono font-bold';
+                  }
+
+                  // Enable navs
+                  navDeckBtn.disabled = false;
+                  navDeckBtn.classList.remove('opacity-60');
+                  navDeckBtn.querySelector('.lock-icon')?.remove();
+
+                  navCoachBtn.disabled = false;
+                  navCoachBtn.classList.remove('opacity-60');
+                  navCoachBtn.querySelector('.lock-icon')?.remove();
+
+                  navSummaryBtn.disabled = false;
+                  navSummaryBtn.classList.remove('opacity-60');
+                  navSummaryBtn.querySelector('.lock-icon')?.remove();
+
+                  // Banner
+                  if (unlockedBanner) unlockedBanner.classList.remove('hidden');
+
+                  // Inject title to deck title render
+                  const deckTitleRender = document.getElementById('deck-title-render');
+                  if (deckTitleRender) {
+                    deckTitleRender.textContent = analyzedProjectTitle;
+                  }
+
+                  // Toast
+                  showToast("Analysis Complete! All pitch materials unlocked.");
+                  
+                  // Auto-switch to deck tab
+                  setTimeout(() => {
+                    switchTab('deck');
+                  }, 1000);
+                });
+              });
+            });
+          });
+        });
+      });
+    }
+
+    // ==========================================
+    // TAB 2: SLIDE NAVIGATOR
+    // ==========================================
+    let currentSlideIndex = 0;
+    const slideSelectorBtns = document.querySelectorAll('.slide-selector-btn');
+    const slideCanvas = document.getElementById('slide-canvas');
+    const slideCounterBadge = document.getElementById('slide-counter-badge');
+    const slideDots = document.getElementById('slide-dots');
+    const btnSlidePrev = document.getElementById('btn-slide-prev');
+    const btnSlideNext = document.getElementById('btn-slide-next');
+    const slideDynamicContent = document.getElementById('slide-dynamic-content');
+
+    const slidesData = [
+      {
+        badge: "Startup pitch",
+        title: "PitchPro: The AI-Powered Presentation Suite",
+        desc: "Transforming raw technology specs, drafts, and case briefs into investor-winning pitches in minutes.",
+        visual: `
+          <div class="mt-4 flex space-x-2">
+            <span class="bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] text-gray-300">⚡ 10x Faster Build</span>
+            <span class="bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-[10px] text-gray-300">🎙️ Built-in Speech Rehearsal</span>
+          </div>
+        `
+      },
+      {
+        badge: "The Problem",
+        title: "The Innovation Translation Gap",
+        desc: "Innovators construct brilliant architectures but fail to pitch their commercial benefit. VCs and judges pass on technologies they cannot quickly comprehend.",
+        visual: `
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+              <span class="text-xs text-red-400 font-bold">$120B</span>
+              <p class="text-[9px] text-gray-400 mt-1">Venture fund failures due to poor pitch clarity.</p>
+            </div>
+            <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+              <span class="text-xs text-red-400 font-bold">85%</span>
+              <p class="text-[9px] text-gray-400 mt-1">Of judges indicate presentation delivery is key.</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        badge: "The Solution",
+        title: "PitchPro Automation",
+        desc: "An automated compiler that turns complex text drafts into professional visuals, matching investor schemas, while analyzing vocal pacing in real-time.",
+        visual: `
+          <div class="space-y-2 mt-4 text-[10px]">
+            <div class="flex items-center text-pitchpro-success">
+              <span class="mr-2">✔</span> AI-parsed slides outline generator.
+            </div>
+            <div class="flex items-center text-pitchpro-success">
+              <span class="mr-2">✔</span> Real-time transcription filler words scorer.
+            </div>
+          </div>
+        `
+      },
+      {
+        badge: "Market Sizing",
+        title: "$8B Global Presentation Addressable Market",
+        desc: "Starting with 15M early founders, hackathon participants, and academic researchers seeking grant funding globally.",
+        visual: `
+          <div class="space-y-2 mt-4">
+            <div class="flex justify-between text-[9px] text-gray-400"><span>TAM (Global Presentations)</span><span>$8.0B</span></div>
+            <div class="h-1 bg-white/10 rounded"><div class="h-full bg-pitchpro-accent w-[80%] rounded"></div></div>
+            <div class="flex justify-between text-[9px] text-gray-400"><span>SAM (SaaS Founders & Hackers)</span><span>$1.2B</span></div>
+            <div class="h-1 bg-white/10 rounded"><div class="h-full bg-pitchpro-success w-[30%] rounded"></div></div>
+          </div>
+        `
+      },
+      {
+        badge: "Business Model",
+        title: "SaaS Subscription Scaling",
+        desc: "Free sandbox trials, Pro membership tiers for founders, and team accelerator licenses for incubators and university hubs.",
+        visual: `
+          <div class="grid grid-cols-3 gap-3 mt-4 text-center">
+            <div class="bg-white/5 p-2 rounded-lg"><span class="block text-xs font-bold text-gray-400">Free</span><span class="text-[10px] text-gray-500">3 runs/mo</span></div>
+            <div class="bg-pitchpro-accent/20 border border-pitchpro-accent/30 p-2 rounded-lg"><span class="block text-xs font-bold text-pitchpro-accent">Pro</span><span class="text-[10px] text-white">$19/mo</span></div>
+            <div class="bg-white/5 p-2 rounded-lg"><span class="block text-xs font-bold text-gray-400">Team</span><span class="text-[10px] text-gray-500">Contact</span></div>
+          </div>
+        `
+      },
+      {
+        badge: "The Ask",
+        title: "Let's give great ideas the presentation they deserve.",
+        desc: "We are currently opening integrations with academic accelerators and early-stage pre-seed cohorts.",
+        visual: `
+          <div class="mt-5">
+            <a href="/app" class="inline-flex items-center text-xs font-bold bg-pitchpro-accent text-white px-4 py-2 rounded-xl">
+              Start Building Now
+            </a>
+          </div>
+        `
+      }
+    ];
+
+    function renderSlide(index: number) {
+      currentSlideIndex = index;
+
+      // Update outline buttons
+      slideSelectorBtns.forEach((btn, i) => {
+        if (i === index) {
+          btn.classList.add('border-pitchpro-accent', 'bg-pitchpro-accent/10', 'text-white');
+          btn.classList.remove('border-white/5', 'hover:bg-white/5', 'text-gray-400');
+          btn.querySelector('span')?.classList.remove('bg-white/10', 'text-gray-400');
+          btn.querySelector('span')?.classList.add('bg-pitchpro-accent', 'text-white');
+        } else {
+          btn.classList.remove('border-pitchpro-accent', 'bg-pitchpro-accent/10', 'text-white');
+          btn.classList.add('border-white/5', 'hover:bg-white/5', 'text-gray-400');
+          btn.querySelector('span')?.classList.add('bg-white/10', 'text-gray-400');
+          btn.querySelector('span')?.classList.remove('bg-pitchpro-accent', 'text-white');
+        }
+      });
+
+      // Update counters & dots
+      if (slideCounterBadge) slideCounterBadge.textContent = `SLIDE ${index + 1}/6`;
+      if (slideDots) {
+        slideDots.innerHTML = Array.from({ length: 6 }).map((_, i) => 
+          `<span class="w-1.5 h-1.5 rounded-full ${i === index ? 'bg-pitchpro-accent' : 'bg-white/20'}"></span>`
+        ).join('');
+      }
+
+      // Load Slide Content
+      const data = slidesData[index];
+      if (slideDynamicContent) {
+        // Special replacement for Title cover slide
+        const titleText = index === 0 ? analyzedProjectTitle : data.title;
+        slideDynamicContent.innerHTML = `
+          <div class="slide-page-element animate-fade-in">
+            <div class="inline-block bg-pitchpro-accent/15 text-pitchpro-accent text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-md mb-3 border border-pitchpro-accent/25">
+              ${data.badge}
+            </div>
+            <h2 class="text-xl sm:text-2xl lg:text-3.5xl font-heading font-extrabold text-white leading-tight max-w-2xl mb-3">
+              ${titleText}
+            </h2>
+            <p class="text-xs sm:text-sm text-gray-400 max-w-xl leading-relaxed">
+              ${data.desc}
+            </p>
+            ${data.visual}
+          </div>
+        `;
+      }
+    }
+
+    slideSelectorBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const slideIdx = parseInt(btn.getAttribute('data-slide') || '0');
+        renderSlide(slideIdx);
+      });
+    });
+
+    if (btnSlidePrev) {
+      btnSlidePrev.addEventListener('click', () => {
+        if (currentSlideIndex > 0) renderSlide(currentSlideIndex - 1);
+      });
+    }
+
+    if (btnSlideNext) {
+      btnSlideNext.addEventListener('click', () => {
+        if (currentSlideIndex < 5) renderSlide(currentSlideIndex + 1);
+      });
+    }
+
+    // Export buttons mock
+    document.querySelectorAll('.btn-mock-export').forEach(btn => {
+      btn.addEventListener('click', () => {
+        showToast("Generating document file... Download will begin shortly.");
+      });
+    });
+
+    // ==========================================
+    // TAB 3: AI REHEARSAL COACH (MIC & SPEECH API)
+    // ==========================================
+    const btnCoachStart = document.getElementById('btn-coach-start') as HTMLButtonElement;
+    const btnCoachStop = document.getElementById('btn-coach-stop') as HTMLButtonElement;
+    const recIndicator = document.getElementById('coach-rec-indicator');
+    const recDot = document.getElementById('rec-dot');
+    const recText = document.getElementById('rec-text');
+    const transcriptBox = document.getElementById('rehearsal-transcript-box');
+    const micPrompt = document.getElementById('mic-prompt-text');
+    const waveCanvas = document.getElementById('wave-canvas') as HTMLCanvasElement;
+
+    // Scorecard Elements
+    const coachScorecard = document.getElementById('coach-scorecard');
+    const scoreTotal = document.getElementById('scorecard-total');
+    const scoreTitle = document.getElementById('scorecard-title');
+    const scoreDesc = document.getElementById('scorecard-desc');
+    const scoreMeter1 = document.getElementById('score-meter-1');
+    const scoreMeter1Val = document.getElementById('score-meter-1-val');
+    const scoreMeter2 = document.getElementById('score-meter-2');
+    const scoreMeter2Val = document.getElementById('score-meter-2-val');
+    const scoreMeter3 = document.getElementById('score-meter-3');
+    const scoreMeter3Val = document.getElementById('score-meter-3-val');
+    const judgeQaContainer = document.getElementById('judge-qa-container');
+    const unlockedTag = document.getElementById('scorecard-unlocked-tag');
+
+    // Live Metrics Counters
+    const metricWpm = document.getElementById('metric-wpm');
+    const metricWpmLabel = document.getElementById('metric-wpm-label');
+    const metricFillers = document.getElementById('metric-fillers');
+
+    let recognition: any = null;
+    let isRecording = false;
+    let rehearsalText = '';
+    let previousSessionsText = '';
+    let wordCount = 0;
+    let timerInterval: any = null;
+    let startTime = 0;
+    let fillerCount = 0;
+
+    // Audio Visualizer parameters
+    let animationFrameId: number;
+    let canvasCtx = waveCanvas ? waveCanvas.getContext('2d') : null;
+    let audioContext: AudioContext | null = null;
+    let analyser: AnalyserNode | null = null;
+    let dataArray: Uint8Array | null = null;
+    let stream: MediaStream | null = null;
+
+    // Setup Canvas Resolution
+    function resizeCanvas() {
+      if (waveCanvas) {
+        waveCanvas.width = waveCanvas.clientWidth;
+        waveCanvas.height = waveCanvas.clientHeight;
+      }
+    }
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 100);
+
+    // Canvas sine wave mock animation
+    let sineOffset = 0;
+    function drawMockWave() {
+      if (!canvasCtx || !waveCanvas) return;
+      canvasCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+      
+      const width = waveCanvas.width;
+      const height = waveCanvas.height;
+      const midY = height / 2;
+
+      canvasCtx.lineWidth = 1.5;
+      
+      // Draw 3 layers of waves
+      for (let w = 0; w < 3; w++) {
+        canvasCtx.beginPath();
+        const amplitude = isRecording ? (25 - w * 6) + Math.random() * 8 : 4;
+        const speed = 0.08 + w * 0.02;
+        const freq = 0.015 - w * 0.003;
+        
+        canvasCtx.strokeStyle = w === 0 
+          ? 'rgba(108, 99, 255, 0.8)' 
+          : w === 1 ? 'rgba(61, 220, 151, 0.4)' : 'rgba(255, 255, 255, 0.15)';
+
+        for (let x = 0; x < width; x++) {
+          const y = midY + Math.sin(x * freq + sineOffset * speed) * amplitude;
+          if (x === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+        }
+        canvasCtx.stroke();
+      }
+
+      sineOffset += 1;
+      animationFrameId = requestAnimationFrame(drawMockWave);
+    }
+
+    // Canvas real Audio Wave analysis
+    function drawRealWave() {
+      if (!canvasCtx || !waveCanvas || !analyser || !dataArray) return;
+      canvasCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+
+      const bufferLength = analyser.frequencyBinCount;
+      analyser.getByteTimeDomainData(dataArray as any);
+
+      const width = waveCanvas.width;
+      const height = waveCanvas.height;
+      const midY = height / 2;
+
+      canvasCtx.lineWidth = 2;
+      canvasCtx.strokeStyle = '#6C63FF';
+      canvasCtx.beginPath();
+
+      const sliceWidth = width / bufferLength;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * midY;
+
+        if (i === 0) canvasCtx.moveTo(x, y);
+        else canvasCtx.lineTo(x, y);
+
+        x += sliceWidth;
+      }
+
+      canvasCtx.lineTo(width, midY);
+      canvasCtx.stroke();
+
+      animationFrameId = requestAnimationFrame(drawRealWave);
+    }
+
+    // Start listening
+    async function startRecording() {
+      isRecording = true;
+      rehearsalText = '';
+      previousSessionsText = '';
+      wordCount = 0;
+      fillerCount = 0;
+      startTime = Date.now();
+
+      if (micPrompt) micPrompt.classList.add('hidden');
+      if (recDot) recDot.className = 'w-1.5 h-1.5 rounded-full bg-red-500 animate-ping mr-1.5';
+      if (recText) recText.textContent = 'LISTENING';
+      if (recIndicator) recIndicator.className = 'text-[9px] font-mono bg-red-500/10 text-red-400 px-2 py-0.5 rounded flex items-center border border-red-500/20';
+
+      if (btnCoachStart) btnCoachStart.disabled = true;
+      if (btnCoachStop) btnCoachStop.disabled = false;
+      if (transcriptBox) transcriptBox.innerHTML = '<span class="text-white animate-pulse">Speak now: Microphone connection active...</span>';
+
+      // Live metrics reset
+      if (metricWpm) metricWpm.textContent = '0 WPM';
+      if (metricWpmLabel) {
+        metricWpmLabel.className = 'text-[9px] text-pitchpro-success font-semibold';
+        metricWpmLabel.textContent = 'Cadence: Normal';
+      }
+      if (metricFillers) {
+        metricFillers.textContent = '0';
+        metricFillers.className = 'text-xl sm:text-2xl font-bold text-white mt-1';
+      }
+
+      // Initialize Web Audio API for real waves
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Create audio contexts
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        audioContext = new AudioContextClass();
+        analyser = audioContext.createAnalyser();
+        const source = audioContext.createMediaStreamSource(stream);
+        source.connect(analyser);
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        
+        cancelAnimationFrame(animationFrameId);
+        drawRealWave();
+      } catch (err) {
+        // Fallback to beautiful simulated wave
+        cancelAnimationFrame(animationFrameId);
+        drawMockWave();
+      }
+
+      // Initialize Speech Recognition API
+      const SpeechClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechClass) {
+        recognition = new SpeechClass();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event: any) => {
+          let interimTranscript = '';
+          let sessionFinalTranscript = '';
+
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            const transcriptChunk = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              sessionFinalTranscript += transcriptChunk;
+            } else {
+              interimTranscript += transcriptChunk;
+            }
+          }
+
+          const displayStr = (previousSessionsText + ' ' + sessionFinalTranscript + ' ' + interimTranscript).trim().replace(/\s+/g, ' ');
+          rehearsalText = (previousSessionsText + ' ' + sessionFinalTranscript).trim().replace(/\s+/g, ' ');
+
+          if (displayStr) {
+            if (transcriptBox) transcriptBox.innerHTML = `<span class="text-white">${displayStr}</span>`;
+
+            // Calculate words & pace
+            const words = displayStr.trim().split(/\s+/).filter(Boolean);
+            wordCount = words.length;
+
+            const elapsedSec = (Date.now() - startTime) / 1000;
+            const wpm = Math.round((wordCount / elapsedSec) * 60) || 0;
+            if (metricWpm) metricWpm.textContent = `${wpm} WPM`;
+            
+            if (metricWpmLabel) {
+              if (wpm > 155) {
+                metricWpmLabel.textContent = 'Cadence: Too Fast';
+                metricWpmLabel.className = 'text-[9px] text-red-400 font-semibold';
+              } else if (wpm < 95 && wpm > 10) {
+                metricWpmLabel.textContent = 'Cadence: Too Slow';
+                metricWpmLabel.className = 'text-[9px] text-yellow-400 font-semibold';
+              } else {
+                metricWpmLabel.textContent = 'Cadence: Perfect';
+                metricWpmLabel.className = 'text-[9px] text-pitchpro-success font-semibold';
+              }
+            }
+
+            // Detect filler words (um, uh, like, so, basically)
+            const matches = displayStr.match(/\b(um|uh|like|so|basically)\b/gi);
+            if (matches) {
+              fillerCount = matches.length;
+              if (metricFillers) {
+                metricFillers.textContent = String(fillerCount);
+                if (fillerCount > 5) {
+                  metricFillers.className = 'text-xl sm:text-2xl font-bold text-red-400 mt-1';
+                } else if (fillerCount > 2) {
+                  metricFillers.className = 'text-xl sm:text-2xl font-bold text-yellow-400 mt-1';
+                } else {
+                  metricFillers.className = 'text-xl sm:text-2xl font-bold text-pitchpro-success mt-1';
+                }
+              }
+            }
+          }
+        };
+
+        recognition.onerror = () => {
+          // Recognition error fallback
+        };
+
+        recognition.onend = () => {
+          if (isRecording) {
+            previousSessionsText = rehearsalText;
+            recognition.start(); // Auto restart if continuous cuts
+          }
+        };
+
+        recognition.start();
+      } else {
+        // Speech API unsupported fallback simulator
+        let step = 0;
+        const mockPhrases = [
+          "Hello and welcome, today I want to tell you about PitchPro...",
+          "Hello and welcome, today I want to tell you about PitchPro. PitchPro is basically an AI platform...",
+          "Hello and welcome, today I want to tell you about PitchPro. PitchPro is basically an AI platform that turns messy docs and like research paper folders into slides...",
+          "Hello and welcome, today I want to tell you about PitchPro. PitchPro is basically an AI platform that turns messy docs and like research paper folders into slides. We also have this speech rehearsal dashboard, um, which gives speakers live telemetry feedback..."
+        ];
+
+        timerInterval = setInterval(() => {
+          if (step < mockPhrases.length) {
+            rehearsalText = mockPhrases[step];
+            if (transcriptBox) {
+              transcriptBox.innerHTML = `<span class="text-white">${rehearsalText}</span>`;
+            }
+            wordCount = rehearsalText.split(' ').length;
+            const elapsed = (Date.now() - startTime) / 1000;
+            const wpm = Math.round((wordCount / elapsed) * 60);
+            if (metricWpm) metricWpm.textContent = `${wpm} WPM`;
+            
+            // Increment filler counts manually for mock
+            if (step === 1) fillerCount = 1;
+            if (step === 2) fillerCount = 2;
+            if (step === 3) fillerCount = 4;
+            
+            if (metricFillers) {
+              metricFillers.textContent = String(fillerCount);
+              metricFillers.className = 'text-xl sm:text-2xl font-bold text-yellow-400 mt-1';
+            }
+            step++;
+          }
+        }, 3000);
+      }
+    }
+
+    // Stop and compile
+    function stopRecording() {
+      isRecording = false;
+
+      // Stop recognition
+      if (recognition) {
+        recognition.onend = null;
+        recognition.stop();
+      }
+      if (timerInterval) clearInterval(timerInterval);
+
+      // Stop audio stream
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      if (audioContext) {
+        audioContext.close();
+      }
+
+      cancelAnimationFrame(animationFrameId);
+      if (canvasCtx && waveCanvas) {
+        canvasCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+      }
+
+      if (micPrompt) micPrompt.classList.remove('hidden');
+      if (recDot) recDot.className = 'w-1.5 h-1.5 rounded-full bg-gray-500 mr-1.5';
+      if (recText) recText.textContent = 'READY';
+      if (recIndicator) recIndicator.className = 'text-[9px] font-mono bg-white/5 text-gray-400 px-2 py-0.5 rounded flex items-center';
+
+      if (btnCoachStart) btnCoachStart.disabled = false;
+      if (btnCoachStop) btnCoachStop.disabled = true;
+
+      showToast("Speech analyzed! Scorecard calculated.");
+      compileScorecard();
+    }
+
+    function compileScorecard() {
+      // Unlock UI
+      if (coachScorecard) coachScorecard.classList.remove('opacity-50');
+      if (unlockedTag) {
+        unlockedTag.textContent = 'UNLOCKED';
+        unlockedTag.className = 'text-[9px] bg-pitchpro-success/20 text-pitchpro-success px-1.5 py-0.5 rounded font-mono font-bold';
+      }
+
+      // Calculate scores
+      let score1 = 95; // Clarity
+      if (fillerCount > 5) {
+        score1 = 65;
+      } else if (fillerCount > 2) {
+        score1 = 80;
+      } else {
+        score1 = Math.max(50, 95 - fillerCount * 3);
+      }
+
+      // Calculate based on word count / transcript pacing
+      const finalWords = rehearsalText.trim().split(/\s+/).filter(Boolean).length;
+      const totalSec = (Date.now() - startTime) / 1000;
+      const finalWpm = Math.round((finalWords / totalSec) * 60) || 0;
+
+      let score2 = 95; // Pace
+      if (finalWpm > 150) {
+        score2 = Math.max(40, 95 - (finalWpm - 150) * 1.5);
+      } else if (finalWpm < 90 && finalWpm > 0) {
+        score2 = Math.max(30, 95 - (90 - finalWpm) * 2);
+      } else if (finalWpm === 0) {
+        score2 = 0;
+      }
+
+      // Storytelling Arc: check coverage of slide title keywords in transcript
+      let score3 = 0; // Storytelling Arc
+      const windowActiveDeck = (window as any).activeDeck;
+      const slides = (windowActiveDeck && windowActiveDeck.slides) ? windowActiveDeck.slides : slidesData;
+      if (slides && slides.length > 0 && finalWords > 0) {
+        const transcriptLower = rehearsalText.toLowerCase();
+        const stopWords = new Set(['the', 'and', 'for', 'with', 'you', 'your', 'our', 'are', 'this', 'that', 'from', 'the', 'a', 'an', 'is', 'of', 'in', 'on', 'at', 'to', 'or', 'but', 'by']);
+        let coveredSlides = 0;
+
+        slides.forEach((slide: any) => {
+          const title = slide.title || '';
+          const words = title.toLowerCase()
+                             .split(/[^a-zA-Z0-9]+/)
+                             .filter((w: string) => w.length >= 3 && !stopWords.has(w));
+          
+          if (words.length === 0) {
+            coveredSlides++;
+            return;
+          }
+          
+          const matched = words.some((word: string) => transcriptLower.includes(word));
+          if (matched) {
+            coveredSlides++;
+          }
+        });
+        score3 = Math.round((coveredSlides / slides.length) * 100);
+      }
+
+      // Overall Score: Balanced average of clarity, pace, and storytelling arc
+      const finalScore = Math.round((score1 + score2 + score3) / 3);
+
+      // Animate score elements
+      if (scoreTotal) scoreTotal.textContent = String(finalScore);
+      if (scoreTitle) scoreTitle.textContent = finalScore >= 80 ? 'Venture Ready!' : 'Good Effort';
+      if (scoreDesc) {
+        scoreDesc.textContent = (finalScore >= 80 
+          ? 'Exceptional speaking rhythm and clarity. Minor filler word reductions will push this to excellence.' 
+          : 'Pacing rate or slide keyword coverage fell outside target ranges. Rehearse again to cover all slide content.') + ' (Estimated based on cadence and keyword coverage)';
+      }
+
+      // Meters
+      if (scoreMeter1) scoreMeter1.style.width = `${score1}%`;
+      if (scoreMeter1Val) scoreMeter1Val.textContent = `${score1}%`;
+      if (scoreMeter2) scoreMeter2.style.width = `${score2}%`;
+      if (scoreMeter2Val) scoreMeter2Val.textContent = `${score2}%`;
+      if (scoreMeter3) scoreMeter3.style.width = `${score3}%`;
+      if (scoreMeter3Val) scoreMeter3Val.textContent = `${score3}%`;
+
+      // Generate Mock Judge Questions
+      if (judgeQaContainer && !(window as any).pitchproGenerationDone) {
+        judgeQaContainer.innerHTML = `
+          <!-- Question 1 -->
+          <div class="bg-white/5 border border-white/5 rounded-xl p-3 relative overflow-hidden group/qa cursor-pointer hover:bg-white/8 hover:border-white/10 transition-all">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-[11px] font-semibold text-white">How will you secure academic user channels?</p>
+                <span class="text-[8px] font-bold text-red-400 uppercase tracking-wide block mt-2">Q1: Business Integration</span>
+                <p class="text-[10px] text-gray-400 hidden mt-2 pt-2 border-t border-white/5 font-normal leading-normal qa-answer">
+                  "We coordinate directly with university grant programs, launching PitchPro as a sponsor utility for engineering hackathons to secure viral student integrations."
+                </p>
+              </div>
+              <span class="text-xs text-gray-500 font-bold ml-2 shrink-0 group-hover/qa:text-white transition-colors">View Answer</span>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="bg-white/5 border border-white/5 rounded-xl p-3 relative overflow-hidden group/qa cursor-pointer hover:bg-white/8 hover:border-white/10 transition-all">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-[11px] font-semibold text-white">What prevents Microsoft/Google from copying you?</p>
+                <span class="text-[8px] font-bold text-red-400 uppercase tracking-wide block mt-2">Q2: Technological Defense</span>
+                <p class="text-[10px] text-gray-400 hidden mt-2 pt-2 border-t border-white/5 font-normal leading-normal qa-answer">
+                  "While giants build broad tools, PitchPro is optimized specifically for competition metrics, packaging speech scoring with instant slide alignment tuned to venture capital schemas."
+                </p>
+              </div>
+              <span class="text-xs text-gray-500 font-bold ml-2 shrink-0 group-hover/qa:text-white transition-colors">View Answer</span>
+            </div>
+          </div>
+        `;
+
+        // Answer toggle logic
+        document.querySelectorAll('.group\\/qa').forEach(item => {
+          item.addEventListener('click', () => {
+            const answer = item.querySelector('.qa-answer');
+            const viewText = item.querySelector('span:last-child');
+            if (answer && viewText) {
+              const isHidden = answer.classList.contains('hidden');
+              if (isHidden) {
+                answer.classList.remove('hidden');
+                viewText.textContent = 'Hide';
+              } else {
+                answer.classList.add('hidden');
+                viewText.textContent = 'View Answer';
+              }
+            }
+          });
+        });
+      }
+    }
+
+    if (btnCoachStart) btnCoachStart.addEventListener('click', startRecording);
+    if (btnCoachStop) btnCoachStop.addEventListener('click', stopRecording);
+
+    // ==========================================
+    // TAB 4: EXECUTIVE SUMMARY & COPY LOGIC
+    // ==========================================
+    const copyButtons = document.querySelectorAll('.btn-copy-text');
+    copyButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const container = document.getElementById(targetId || '');
+        if (container) {
+          // Extract plain text content
+          const text = container.innerText || container.textContent || '';
+          navigator.clipboard.writeText(text).then(() => {
+            showToast("Copied to clipboard successfully!");
+            
+            // Toggle copy icon to checkmark
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `
+              <span class="text-pitchpro-success flex items-center text-[10px] font-mono">
+                Copied
+              </span>
+            `;
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+            }, 2000);
+          }).catch(() => {
+            showToast("Failed to copy automatically.");
+          });
+        }
+      });
+    });
+
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" is:inline></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js" is:inline></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" is:inline></script>
+  <script>
+    declare var html2pdf: any;
+    declare var pdfjsLib: any;
+    declare var mammoth: any;
+
+    // Client-side script to wire up the frontend to the backend API routes and render payloads
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnRunAnalysis = document.querySelector('#btn-run-analysis');
+      const textareaConcept = document.querySelector('#concept-text') as HTMLTextAreaElement;
+      const inputStartupName = document.querySelector('#startup-name') as HTMLInputElement;
+      const inputBrandColor1 = document.querySelector('#brand-color-1') as HTMLInputElement;
+      const inputBrandColor2 = document.querySelector('#brand-color-2') as HTMLInputElement;
+      const pickerBrandColor1 = document.querySelector('#brand-color-1-picker') as HTMLInputElement;
+      const pickerBrandColor2 = document.querySelector('#brand-color-2-picker') as HTMLInputElement;
+      const previewTextBrandColor1 = document.querySelector('#color-1-preview-text');
+      const previewTextBrandColor2 = document.querySelector('#color-2-preview-text');
+      const terminalLogs = document.querySelector('#terminal-logs');
+
+      // Sync color picker 1 with text input 1
+      if (inputBrandColor1 && pickerBrandColor1) {
+        inputBrandColor1.addEventListener('input', (e) => {
+          let val = (e.target as HTMLInputElement).value;
+          if (val.startsWith('#') && val.length === 7) {
+            pickerBrandColor1.value = val;
+            if (previewTextBrandColor1) previewTextBrandColor1.textContent = val.toUpperCase();
+          }
+        });
+        pickerBrandColor1.addEventListener('input', (e) => {
+          let val = (e.target as HTMLInputElement).value;
+          inputBrandColor1.value = val;
+          if (previewTextBrandColor1) previewTextBrandColor1.textContent = val.toUpperCase();
+        });
+      }
+
+      // Sync color picker 2 with text input 2
+      if (inputBrandColor2 && pickerBrandColor2) {
+        inputBrandColor2.addEventListener('input', (e) => {
+          let val = (e.target as HTMLInputElement).value;
+          if (val.startsWith('#') && val.length === 7) {
+            pickerBrandColor2.value = val;
+            if (previewTextBrandColor2) previewTextBrandColor2.textContent = val.toUpperCase();
+          }
+        });
+        pickerBrandColor2.addEventListener('input', (e) => {
+          let val = (e.target as HTMLInputElement).value;
+          inputBrandColor2.value = val;
+          if (previewTextBrandColor2) previewTextBrandColor2.textContent = val.toUpperCase();
+        });
+      }
+
+      // Shared flag for unlocking tab transitions
+      let generationDone = false;
+
+      // Active data payloads for navigation and rendering
+      let activeDeck: any = null;
+      let activeCopy: any = null;
+      let activeColorTheme = '';
+      let currentSlideIndex = 0;
+
+      // Unlocking tabs logic
+      const unlockTabs = () => {
+        const tabs = ['deck', 'coach', 'summary'];
+        tabs.forEach(tabName => {
+          const btn = document.getElementById(`nav-${tabName}`);
+          if (btn) {
+            btn.removeAttribute('disabled');
+            btn.classList.remove('opacity-60');
+            btn.classList.add('hover:bg-white/5');
+            btn.querySelector('.lock-icon')?.remove();
+          }
+        });
+
+        // Show the top unlocked alert banner
+        const unlockedBanner = document.getElementById('unlocked-banner');
+        if (unlockedBanner) {
+          unlockedBanner.classList.remove('hidden');
+        }
+      };
+
+      // Toast function
+      const showToastMessage = (msg: string) => {
+        const toast = document.getElementById('app-toast');
+        const toastMsg = document.getElementById('toast-message');
+        if (toast && toastMsg) {
+          toastMsg.textContent = msg;
+          toast.classList.remove('translate-y-20', 'opacity-0');
+          toast.classList.add('translate-y-0', 'opacity-100');
+          
+          setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+          }, 3000);
+        }
+      };
+
+      // Override Tab Switcher Logic to bypass the old module-scoped block-check
+      const tabButtons = document.querySelectorAll('.nav-item-btn');
+      const tabPanels = document.querySelectorAll('.app-tab-panel');
+
+      tabButtons.forEach(btn => {
+        const newTabBtn = btn.cloneNode(true) as HTMLButtonElement;
+        btn.parentNode?.replaceChild(newTabBtn, btn);
+        
+        newTabBtn.addEventListener('click', () => {
+          const targetTab = newTabBtn.getAttribute('data-tab');
+          if (!targetTab) return;
+          
+          if (targetTab !== 'upload' && !generationDone) {
+            showToastMessage("Please run the AI Analysis first to unlock this feature!");
+            return;
+          }
+          
+          // Switch active state classes
+          tabButtons.forEach(b => {
+            const currentTab = b.getAttribute('data-tab');
+            const actualBtn = document.getElementById(`nav-${currentTab}`) as HTMLButtonElement;
+            if (actualBtn) {
+              if (currentTab === targetTab) {
+                actualBtn.classList.add('bg-white/10', 'text-white');
+                actualBtn.classList.remove('text-gray-400', 'hover:bg-white/5');
+              } else {
+                actualBtn.classList.remove('bg-white/10', 'text-white');
+                if (actualBtn.hasAttribute('disabled')) {
+                  actualBtn.classList.add('text-gray-400');
+                } else {
+                  actualBtn.classList.add('text-gray-400', 'hover:bg-white/5');
+                }
+              }
+            }
+          });
+
+          // Toggle panels
+          tabPanels.forEach(panel => {
+            if (panel.getAttribute('id') === `tab-content-${targetTab}`) {
+              panel.classList.remove('hidden');
+              panel.classList.add('flex');
+            } else {
+              panel.classList.add('hidden');
+              panel.classList.remove('flex');
+            }
+          });
+        });
+      });
+
+      // Render function to display a specific slide in the viewport
+      const renderSlide = (index: number) => {
+        if (!activeDeck) return;
+        currentSlideIndex = index;
+
+        const slides = activeDeck.slides;
+        const slide = slides[index];
+        if (!slide) return;
+
+        let hex = activeDeck.themeHexCode || '#6C63FF';
+        if (!hex.startsWith('#')) {
+          hex = '#' + hex;
+        }
+
+        let hex2 = activeDeck.themeHexCode2 || '#3DDC97';
+        if (!hex2.startsWith('#')) {
+          hex2 = '#' + hex2;
+        }
+
+        let alignment = slide.alignment || (index === 0 ? 'center' : 'left');
+        let scale = slide.scale || 1.0;
+
+        let alignClass = 'text-left items-start';
+        let liAlignClass = 'justify-start';
+        let gridItemAlignClass = 'justify-start';
+        let headerAlignClass = 'text-left';
+
+        if (alignment === 'center') {
+          alignClass = 'text-center items-center';
+          liAlignClass = 'justify-center';
+          gridItemAlignClass = 'justify-center text-center';
+          headerAlignClass = 'text-center mx-auto';
+        } else if (alignment === 'right') {
+          alignClass = 'text-right items-end';
+          liAlignClass = 'justify-end';
+          gridItemAlignClass = 'justify-end text-right';
+          headerAlignClass = 'text-right ml-auto';
+        }
+
+        // Update toolbar active states
+        const btnLeft = document.getElementById('btn-align-left');
+        const btnCenter = document.getElementById('btn-align-center');
+        const btnRight = document.getElementById('btn-align-right');
+        const inputScale = document.getElementById('input-text-sizing') as HTMLInputElement;
+        const scaleText = document.getElementById('text-sizing-val');
+
+        if (btnLeft && btnCenter && btnRight) {
+          [btnLeft, btnCenter, btnRight].forEach(b => {
+            b.className = "px-3.5 py-1.5 rounded-lg hover:bg-white/5 active:bg-white/10 transition-all font-mono font-bold text-gray-400 hover:text-white";
+          });
+          const activeBtn = alignment === 'center' ? btnCenter : (alignment === 'right' ? btnRight : btnLeft);
+          activeBtn.className = "px-3.5 py-1.5 rounded-lg transition-all font-mono font-bold text-white bg-pitchpro-accent";
+        }
+
+        if (inputScale) {
+          inputScale.value = scale.toString();
+        }
+        if (scaleText) {
+          scaleText.textContent = `${scale.toFixed(2)}x`;
+        }
+
+        const isLightTheme = activeColorTheme.toLowerCase().includes('white') || 
+                             activeColorTheme.toLowerCase().includes('light') || 
+                             activeColorTheme.toLowerCase().includes('bright');
+
+        const titleClass = isLightTheme 
+          ? "text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 leading-tight max-w-3xl flex-1 hover:bg-black/5 focus:outline-dashed focus:outline-gray-400 focus:bg-black/5 rounded px-1 transition outline-none" 
+          : "text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-tight max-w-3xl flex-1 hover:bg-white/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none";
+
+        const bulletTextHoverClass = isLightTheme 
+          ? "bullet-text flex-1 hover:bg-black/5 focus:outline-dashed focus:outline-gray-400 focus:bg-black/5 rounded px-1 transition outline-none" 
+          : "bullet-text flex-1 hover:bg-white/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none";
+
+        const boldTextColor = isLightTheme ? 'text-slate-955 font-bold' : 'text-white font-bold';
+
+        // 1. Update slide dynamic content using Dynamic Layout Templates
+        const slideDynamicContent = document.getElementById('slide-dynamic-content');
+        if (slideDynamicContent) {
+          const template = slide.template ? slide.template.toUpperCase() : (index === 0 ? 'A' : (index % 2 === 1 ? 'B' : 'C'));
+
+          if (template === 'A') {
+            // TEMPLATE A: The Hero / Big Statement (Center-aligned layout, massive text)
+            slideDynamicContent.innerHTML = `
+              <div id="slide-scale-wrapper" class="w-full h-full" style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; display: flex; flex-direction: column; justify-content: center; align-items: ${alignment === 'center' ? 'center' : (alignment === 'right' ? 'flex-end' : 'flex-start')};">
+                <div class="slide-page-element flex flex-col justify-center ${alignClass} w-full max-w-3xl mx-auto relative z-10 py-2">
+                  <!-- Centered radial background glow -->
+                  <div style="background: radial-gradient(circle at 50% 50%, ${hex}0c, ${hex2}06, transparent 55%);" class="absolute inset-0 pointer-events-none"></div>
+                  
+                  <h2 id="slide-title-editable" contenteditable="true" class="text-2.5xl sm:text-3.5xl lg:text-4xl font-extrabold tracking-tight ${isLightTheme ? 'text-slate-900' : 'text-white'} leading-tight mb-4 hover:bg-black/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none max-w-2xl relative z-10 w-full">
+                    ${slide.title}
+                  </h2>
+
+                  <div id="slide-bullets-editable" class="space-y-2.5 w-full max-w-xl mx-auto ${isLightTheme ? 'text-slate-700' : 'text-gray-300'} relative z-10">
+                    ${slide.bulletPoints.map((point: string, i: number) => `
+                      <p data-index="${i}" class="text-xs sm:text-sm leading-relaxed">
+                        <span contenteditable="true" class="bullet-text hover:bg-white/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none inline-block">
+                          ${point.replace(/\*\*(.*?)\*\*/g, `<strong class="${boldTextColor}">$1</strong>`)}
+                        </span>
+                      </p>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            `;
+          } else if (template === 'B') {
+            // TEMPLATE B: The Split View (Asymmetric 2-column: text left, premium geometric visual right)
+            slideDynamicContent.innerHTML = `
+              <div id="slide-scale-wrapper" class="w-full h-full" style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; display: flex; flex-direction: column; justify-content: center;">
+                <div class="slide-page-element flex flex-col justify-center h-full w-full">
+                  <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center w-full">
+                    <!-- Left span (3 cols) -->
+                    <div class="lg:col-span-3 flex flex-col justify-center ${alignClass}">
+                      <div class="flex items-start space-x-3.5 mb-4 w-full ${alignment === 'center' ? 'justify-center' : (alignment === 'right' ? 'justify-end' : 'justify-start')}">
+                        <div style="background: linear-gradient(to bottom, ${hex}, ${hex2});" class="w-1.5 h-8 rounded-full mt-1 shrink-0"></div>
+                        <h2 id="slide-title-editable" contenteditable="true" class="${titleClass}">
+                          ${slide.title}
+                        </h2>
+                      </div>
+
+                      <ul id="slide-bullets-editable" class="space-y-2.5 w-full ${isLightTheme ? 'text-slate-700' : 'text-gray-300'} leading-relaxed">
+                        ${slide.bulletPoints.map((point: string, i: number) => `
+                          <li data-index="${i}" class="flex items-start ${liAlignClass}">
+                            <span style="color: ${hex2};" class="mr-2.5 shrink-0 select-none text-sm">•</span>
+                            <span contenteditable="true" class="${bulletTextHoverClass}">
+                              ${point.replace(/\*\*(.*?)\*\*/g, `<strong class="${boldTextColor}">$1</strong>`)}
+                            </span>
+                          </li>
+                        `).join('')}
+                      </ul>
+                    </div>
+
+                    <!-- Right span (2 cols) - Premium Abstract Geometric Visual -->
+                    <div class="lg:col-span-2 hidden lg:flex items-center justify-center">
+                      <div class="w-full aspect-[4/3] rounded-2xl relative overflow-hidden select-none shadow-[0_0_50px_rgba(0,0,0,0.3)] group/box" style="background: linear-gradient(135deg, rgba(15,15,22,0.85) 30%, ${hex}20 100%), #0D0D12; border: 1px solid ${hex}30;">
+                        <!-- Subtle inner border glow -->
+                        <div class="absolute inset-[1px] rounded-[15px] pointer-events-none" style="box-shadow: inset 0 0 12px 1px ${hex}15;"></div>
+                        
+                        <!-- Smooth background orb glow -->
+                        <div style="background: radial-gradient(circle at 70% 30%, ${hex2}2a, transparent 70%);" class="absolute inset-0 pointer-events-none blur-xl"></div>
+                        <div style="background: radial-gradient(circle at 20% 80%, ${hex}1a, transparent 60%);" class="absolute inset-0 pointer-events-none blur-lg"></div>
+
+                        <!-- Abstract geometric elements -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <!-- Large rotating dashed circle -->
+                          <div style="border-color: ${hex}1a;" class="absolute w-44 h-44 rounded-full border border-dashed animate-[spin_40s_linear_infinite]"></div>
+                          <!-- Medium dashed circle -->
+                          <div style="border-color: ${hex2}26;" class="absolute w-32 h-32 rounded-full border border-dashed animate-[spin_25s_linear_infinite_reverse]"></div>
+                          
+                          <!-- Sleek diagonal glassmorphic slab -->
+                          <div style="background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border-color: rgba(255,255,255,0.05);" class="absolute w-24 h-24 rounded-2xl border rotate-45 backdrop-blur-sm shadow-[0_8px_32px_0_rgba(0,0,0,0.2)]"></div>
+                          
+                          <!-- Center glowing point -->
+                          <div style="background: linear-gradient(135deg, ${hex}, ${hex2}); box-shadow: 0 0 20px ${hex};" class="w-3.5 h-3.5 rounded-full z-10 animate-pulse"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          } else {
+            // TEMPLATE C: The Wide Grid (Full width title, accent divider, bullet grid below)
+            slideDynamicContent.innerHTML = `
+              <div id="slide-scale-wrapper" class="w-full h-full" style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; display: flex; flex-direction: column; justify-content: center;">
+                <div class="slide-page-element flex flex-col justify-center h-full w-full">
+                  <div class="mb-3 w-full ${headerAlignClass}">
+                    <h2 id="slide-title-editable" contenteditable="true" class="${titleClass} mb-2 inline-block">
+                      ${slide.title}
+                    </h2>
+                    <div style="background: linear-gradient(to right, ${hex}, ${hex2}); opacity: 0.35;" class="h-0.5 w-full rounded-full"></div>
+                  </div>
+
+                  <ul id="slide-bullets-editable" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 w-full ${isLightTheme ? 'text-slate-700' : 'text-gray-300'} leading-relaxed mt-1">
+                    ${slide.bulletPoints.map((point: string, i: number) => `
+                      <li data-index="${i}" class="flex items-start bg-white/[0.01] border border-white/[0.02] rounded-xl p-2.5 ${gridItemAlignClass}">
+                        <span style="color: ${hex2};" class="mr-2.5 shrink-0 select-none text-sm mt-0.5">•</span>
+                        <span contenteditable="true" class="${bulletTextHoverClass}">
+                          ${point.replace(/\*\frac{.*?}{.*?}/g, '').replace(/\*\*(.*?)\*\*/g, `<strong class="${boldTextColor}">$1</strong>`)}
+                        </span>
+                      </li>
+                    `).join('')}
+                  </ul>
+                </div>
+              </div>
+            `;
+          }
+
+          // Auto-Fit Text Logic: if content overflows parent height, dynamically shrink the scale
+          const scaleWrapper = document.getElementById('slide-scale-wrapper');
+          if (scaleWrapper && slideDynamicContent) {
+            const parentHeight = slideDynamicContent.clientHeight;
+            const childHeight = scaleWrapper.scrollHeight;
+            if (childHeight > parentHeight && parentHeight > 0) {
+              const shrinkFactor = parentHeight / childHeight;
+              const finalScale = scale * shrinkFactor * 0.95;
+              scaleWrapper.style.transform = `scale(${finalScale})`;
+              scaleWrapper.style.transformOrigin = alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left');
+              
+              const inputScale = document.getElementById('input-text-sizing') as HTMLInputElement;
+              const scaleText = document.getElementById('text-sizing-val');
+              if (inputScale) inputScale.value = finalScale.toString();
+              if (scaleText) scaleText.textContent = `${finalScale.toFixed(2)}x`;
+              
+              slide.scale = finalScale;
+            }
+          }
+
+          // Attach listeners to save edits back to activeDeck.slides in memory
+          const editableTitle = document.getElementById('slide-title-editable');
+          if (editableTitle) {
+            editableTitle.addEventListener('blur', () => {
+              if (activeDeck && activeDeck.slides[currentSlideIndex]) {
+                activeDeck.slides[currentSlideIndex].title = editableTitle.innerText.trim();
+              }
+            });
+          }
+
+          const editableBullets = document.querySelectorAll('#slide-bullets-editable .bullet-text');
+          editableBullets.forEach((el) => {
+            el.addEventListener('blur', () => {
+              const htmlEl = el as HTMLElement;
+              const parentElement = htmlEl.closest('[data-index]');
+              const idxAttr = parentElement?.getAttribute('data-index');
+              if (idxAttr && activeDeck && activeDeck.slides[currentSlideIndex]) {
+                const bulletIdx = parseInt(idxAttr, 10);
+                activeDeck.slides[currentSlideIndex].bulletPoints[bulletIdx] = htmlEl.innerHTML;
+              }
+            });
+          });
+        }
+
+        // Apply theme color border-top to slide canvas
+        const slideCanvas = document.getElementById('slide-canvas');
+        if (slideCanvas) {
+          slideCanvas.style.borderTop = `4px solid ${hex}`;
+          if (isLightTheme) {
+            slideCanvas.className = "aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#F9F9FB] border border-gray-200 shadow-[0_0_0_1px_rgba(0,0,0,0.02)] p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none";
+          } else {
+            slideCanvas.className = "aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#0B0B0F] border border-gray-800/60 shadow-[0_0_0_1px_rgba(255,255,255,0.01)] p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none";
+          }
+        }
+
+        // 2. Update counter badge & dots
+        const slideCounterBadge = document.getElementById('slide-counter-badge');
+        if (slideCounterBadge) {
+          slideCounterBadge.textContent = `SLIDE ${index + 1}/${slides.length}`;
+        }
+
+        const slideDots = document.getElementById('slide-dots');
+        if (slideDots) {
+          slideDots.innerHTML = Array.from({ length: slides.length }).map((_, i) => 
+            `<span style="background-color: ${i === index ? hex : 'rgba(255,255,255,0.2)'};" class="w-1.5 h-1.5 rounded-full"></span>`
+          ).join('');
+        }
+
+        // 3. Update sidebar buttons active state styling
+        const selectorContainer = document.getElementById('slide-selectors-container');
+        if (selectorContainer) {
+          const buttons = selectorContainer.querySelectorAll('.slide-selector-btn');
+          buttons.forEach((btn, i) => {
+            const numSpan = btn.querySelector('span:first-child') as HTMLElement;
+            if (i === index) {
+              btn.className = "slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border text-white transition-all flex items-center space-x-3 text-xs font-bold";
+              (btn as HTMLElement).style.borderColor = hex;
+              (btn as HTMLElement).style.backgroundColor = `${hex}1a`;
+              if (numSpan) {
+                numSpan.className = "w-5 h-5 rounded text-white flex items-center justify-center text-[10px] font-bold shrink-0";
+                numSpan.style.backgroundColor = hex;
+              }
+            } else {
+              btn.className = "slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border border-white/5 hover:bg-white/5 text-gray-400 hover:text-white transition-all flex items-center space-x-3 text-xs font-bold";
+              (btn as HTMLElement).style.borderColor = "";
+              (btn as HTMLElement).style.backgroundColor = "";
+              if (numSpan) {
+                numSpan.className = "w-5 h-5 rounded bg-white/10 text-gray-400 flex items-center justify-center text-[10px] font-bold shrink-0";
+                numSpan.style.backgroundColor = "";
+              }
+            }
+          });
+        }
+
+        // 4. Update Presenter Notes (storytellingPurpose and spokenText)
+        const notesContainer = document.getElementById('presenter-notes-container');
+        const storyPurpose = document.getElementById('presenter-story-purpose');
+        const spokenText = document.getElementById('presenter-spoken-text');
+
+        if (notesContainer && storyPurpose && spokenText) {
+          notesContainer.classList.remove('hidden');
+          notesContainer.classList.add('flex');
+          storyPurpose.textContent = slide.storytellingPurpose || 'No purpose specified.';
+
+          let scriptText = 'No script available for this slide.';
+          if (activeCopy && activeCopy.presentationScripts) {
+            const matchingScript = activeCopy.presentationScripts.find((s: any) => s.slideNumber === slide.slideNumber);
+            if (matchingScript) {
+              scriptText = matchingScript.spokenText;
+            }
+          }
+          spokenText.textContent = scriptText;
+        }
+      };
+
+      // Rebuilds the sidebar outlines dynamically to match the deck length
+      const buildSidebar = (deckJSON: any) => {
+        const selectorContainer = document.getElementById('slide-selectors-container');
+        if (selectorContainer) {
+          selectorContainer.innerHTML = deckJSON.slides.map((slide: any, i: number) => `
+            <button class="slide-selector-btn shrink-0 w-36 sm:w-44 lg:w-auto text-left p-3 rounded-xl border border-white/5 hover:bg-white/5 text-gray-400 hover:text-white transition-all flex items-center space-x-3 text-xs font-bold" data-slide="${i}">
+              <span class="w-5 h-5 rounded bg-white/10 text-gray-400 flex items-center justify-center text-[10px] font-bold shrink-0">${slide.slideNumber}</span>
+              <span class="truncate">${slide.title}</span>
+            </button>
+          `).join('');
+
+          // Add click event listeners to new buttons
+          selectorContainer.querySelectorAll('.slide-selector-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const idx = parseInt(btn.getAttribute('data-slide') || '0', 10);
+              renderSlide(idx);
+            });
+          });
+        }
+      };
+
+      // Set up next / prev slide controls
+      const btnSlidePrev = document.getElementById('btn-slide-prev');
+      const btnSlideNext = document.getElementById('btn-slide-next');
+
+      if (btnSlidePrev) {
+        const newPrev = btnSlidePrev.cloneNode(true) as HTMLButtonElement;
+        btnSlidePrev.parentNode?.replaceChild(newPrev, btnSlidePrev);
+        newPrev.addEventListener('click', () => {
+          if (activeDeck && currentSlideIndex > 0) {
+            renderSlide(currentSlideIndex - 1);
+          }
+        });
+      }
+
+      if (btnSlideNext) {
+        const newNext = btnSlideNext.cloneNode(true) as HTMLButtonElement;
+        btnSlideNext.parentNode?.replaceChild(newNext, btnSlideNext);
+        newNext.addEventListener('click', () => {
+          if (activeDeck && currentSlideIndex < activeDeck.slides.length - 1) {
+            renderSlide(currentSlideIndex + 1);
+          }
+        });
+      }
+
+      // 1. Render function for the Pitch Deck (Carousel initializer)
+      const renderDeck = (deckJSON: any) => {
+        activeDeck = deckJSON;
+        (window as any).activeDeck = deckJSON;
+
+        // Show Slide Controls Toolbar
+        const toolbar = document.getElementById('slide-controls-toolbar');
+        if (toolbar) {
+          toolbar.classList.remove('hidden');
+          toolbar.classList.add('flex');
+        }
+
+        buildSidebar(deckJSON);
+        renderSlide(0);
+
+        // Update titles on the page
+        const deckTitleRender = document.getElementById('deck-title-render');
+        if (deckTitleRender) {
+          deckTitleRender.textContent = deckJSON.companyName;
+        }
+      };
+
+      // Slide Formatting Controls Toolbar Logic
+      const btnAlignLeft = document.getElementById('btn-align-left');
+      const btnAlignCenter = document.getElementById('btn-align-center');
+      const btnAlignRight = document.getElementById('btn-align-right');
+      const inputTextSizing = document.getElementById('input-text-sizing') as HTMLInputElement;
+
+      const setSlideAlignment = (alignment: string) => {
+        if (!activeDeck) return;
+        const slide = activeDeck.slides[currentSlideIndex];
+        if (!slide) return;
+        slide.alignment = alignment;
+        
+        // Re-render slide to apply styling classes
+        renderSlide(currentSlideIndex);
+      };
+
+      if (btnAlignLeft) btnAlignLeft.addEventListener('click', () => setSlideAlignment('left'));
+      if (btnAlignCenter) btnAlignCenter.addEventListener('click', () => setSlideAlignment('center'));
+      if (btnAlignRight) btnAlignRight.addEventListener('click', () => setSlideAlignment('right'));
+
+      if (inputTextSizing) {
+        inputTextSizing.addEventListener('input', (e) => {
+          const val = parseFloat((e.target as HTMLInputElement).value);
+          const scaleText = document.getElementById('text-sizing-val');
+          if (scaleText) scaleText.textContent = `${val.toFixed(2)}x`;
+          
+          const scaleWrapper = document.getElementById('slide-scale-wrapper');
+          if (scaleWrapper) {
+            scaleWrapper.style.transform = `scale(${val})`;
+            const alignment = (activeDeck && activeDeck.slides[currentSlideIndex]) ? (activeDeck.slides[currentSlideIndex].alignment || 'left') : 'left';
+            scaleWrapper.style.transformOrigin = alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left');
+          }
+          
+          if (activeDeck && activeDeck.slides[currentSlideIndex]) {
+            activeDeck.slides[currentSlideIndex].scale = val;
+          }
+        });
+      }
+
+      // 2. Render function for the Executive Summary
+      const renderSummary = (companyName: string, summary: string, pitch: string) => {
+        const execTextArea = document.getElementById('exec-text-area');
+        const elevatorTextArea = document.getElementById('elevator-text-area');
+
+        if (execTextArea) {
+          execTextArea.innerHTML = `
+            <p class="text-white font-bold mb-3"># EXECUTIVE SUMMARY: ${companyName.toUpperCase()}</p>
+            <p class="leading-relaxed whitespace-pre-wrap">${summary}</p>
+          `;
+
+          // Update word count label
+          const execCountElement = execTextArea.closest('.bg-\\[\\#09090C\\]')?.querySelector('.border-t span:first-child');
+          if (execCountElement) {
+            const words = summary.trim().split(/\s+/).length;
+            execCountElement.textContent = `Length: ${words} words`;
+          }
+        }
+
+        if (elevatorTextArea) {
+          elevatorTextArea.innerHTML = `
+            <p class="italic text-gray-300 leading-relaxed">"${pitch}"</p>
+          `;
+
+          // Update word count label
+          const elevatorCountElement = elevatorTextArea.closest('.bg-\\[\\#09090C\\]')?.querySelector('.border-t span:first-child');
+          if (elevatorCountElement) {
+            const words = pitch.trim().split(/\s+/).length;
+            elevatorCountElement.textContent = `Words: ${words}`;
+          }
+        }
+      };
+
+      // 3. Render function for the Rehearsal Coach (predictedJudgeQuestions)
+      const renderQA = (questions: any[]) => {
+        const judgeQaContainer = document.getElementById('judge-qa-container');
+        const coachScorecard = document.getElementById('coach-scorecard');
+        const scorecardUnlockedTag = document.getElementById('scorecard-unlocked-tag');
+
+        // Flag that real API generation has completed so mock coach rehearsal doesn't override Q&A
+        (window as any).pitchproGenerationDone = true;
+
+        if (coachScorecard) {
+          coachScorecard.classList.remove('opacity-50');
+        }
+        if (scorecardUnlockedTag) {
+          scorecardUnlockedTag.textContent = 'UNLOCKED';
+          scorecardUnlockedTag.className = 'text-[9px] bg-pitchpro-success/20 text-pitchpro-success px-1.5 py-0.5 rounded font-mono font-bold';
+        }
+
+        if (judgeQaContainer) {
+          judgeQaContainer.innerHTML = questions.map((question: any) => {
+            const cleanFramework = question.idealAnswerFramework.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-white">$1</strong>');
+            return `
+              <div class="bg-white/5 border border-white/5 rounded-xl p-5 relative overflow-hidden group/qa cursor-pointer hover:bg-white/8 hover:border-white/10 transition-all mb-3.5">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <p class="text-base font-semibold text-white">${question.question}</p>
+                    <span class="text-xs font-bold text-indigo-400 tracking-wide block mt-3">
+                      ${question.id} — Reason: ${question.reasonForAsking}
+                    </span>
+                    <p class="text-sm text-gray-300 hidden mt-3 pt-3 border-t border-white/5 font-normal leading-relaxed qa-answer">
+                      <strong class="text-white">Ideal Answer Framework:</strong> ${cleanFramework}
+                    </p>
+                  </div>
+                  <span class="text-xs text-gray-400 font-bold ml-4 shrink-0 group-hover/qa:text-white transition-colors select-none">View Details</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          // Attach click listeners to Q&A items to toggle details
+          judgeQaContainer.querySelectorAll('.group\\/qa').forEach(item => {
+            item.addEventListener('click', () => {
+              const answer = item.querySelector('.qa-answer');
+              const viewText = item.querySelector('span:last-child');
+              if (answer && viewText) {
+                const isHidden = answer.classList.contains('hidden');
+                if (isHidden) {
+                  answer.classList.remove('hidden');
+                  viewText.textContent = 'Hide';
+                } else {
+                  answer.classList.add('hidden');
+                  viewText.textContent = 'View Details';
+                }
+              }
+            });
+          });
+        }
+      };
+
+      // Set up clean PDF export functionality using html2pdf.js
+      const btnExportPdf = document.getElementById('btn-export-pdf');
+      if (btnExportPdf) {
+        const newExportBtn = btnExportPdf.cloneNode(true) as HTMLButtonElement;
+        btnExportPdf.parentNode?.replaceChild(newExportBtn, btnExportPdf);
+
+        newExportBtn.addEventListener('click', () => {
+          if (!activeDeck) {
+            showToastMessage("Please run the analysis first to generate a deck.");
+            return;
+          }
+
+          // Create temporary full-screen overlay (visible for snapshot rendering, but moved offscreen)
+          const overlay = document.createElement('div');
+          overlay.className = "fixed inset-0 bg-[#0B0B0F] z-[9999] flex flex-col items-center justify-center text-white";
+          overlay.innerHTML = `
+            <div class="flex flex-col items-center gap-4">
+              <div class="w-12 h-12 border-4 border-white/10 border-t-pitchpro-accent rounded-full animate-spin"></div>
+              <p class="text-sm font-bold text-gray-300">Generating Your High-Resolution Pitch Deck PDF... Please wait.</p>
+            </div>
+          `;
+          document.body.appendChild(overlay);
+
+          // Create render container directly on body, offscreen but inside active viewport coordinate space
+          const renderContainer = document.createElement('div');
+          renderContainer.id = "pdf-render-container";
+          renderContainer.style.position = "absolute";
+          renderContainer.style.left = "0";
+          renderContainer.style.top = "0";
+          renderContainer.style.width = "11in";
+          renderContainer.style.opacity = "0.01";
+          renderContainer.style.zIndex = "-1000";
+          renderContainer.style.pointerEvents = "none";
+          document.body.appendChild(renderContainer);
+
+          let hex = activeDeck.themeHexCode || '#6C63FF';
+          if (!hex.startsWith('#')) {
+            hex = '#' + hex;
+          }
+          let hex2 = activeDeck.themeHexCode2 || '#3DDC97';
+          if (!hex2.startsWith('#')) {
+            hex2 = '#' + hex2;
+          }
+
+          // Render clean presentation layouts (ONLY title and bulletPoints, keeping live user edits)
+          if (renderContainer) {
+            const isLightTheme = activeColorTheme.toLowerCase().includes('white') || 
+                                 activeColorTheme.toLowerCase().includes('light') || 
+                                 activeColorTheme.toLowerCase().includes('bright');
+            const pdfBg = isLightTheme ? '#F9F9FB' : '#0B0B0F';
+            const pdfTitleColor = isLightTheme ? '#0F172A' : '#ffffff';
+            const pdfBulletColor = isLightTheme ? '#334155' : '#D1D5DB';
+            const pdfBoldColor = isLightTheme ? '#0F172A' : '#ffffff';
+            const pdfBorderColor = isLightTheme ? '#E2E8F0' : '#1F2937';
+
+            renderContainer.innerHTML = activeDeck.slides.map((slide: any, i: number) => {
+              let layoutHtml = '';
+              let alignment = slide.alignment || (i === 0 ? 'center' : 'left');
+              let scale = slide.scale || 1.0;
+
+              let alignStyle = 'text-align: left; align-items: flex-start;';
+              let liAlignStyle = 'justify-content: flex-start;';
+              let gridItemAlignStyle = 'justify-content: flex-start; text-align: left;';
+              let headerAlignStyle = 'text-align: left; margin-left: 0;';
+
+              if (alignment === 'center') {
+                alignStyle = 'text-align: center; align-items: center;';
+                liAlignStyle = 'justify-content: center;';
+                gridItemAlignStyle = 'justify-content: center; text-align: center;';
+                headerAlignStyle = 'text-align: center; margin-left: auto; margin-right: auto;';
+              } else if (alignment === 'right') {
+                alignStyle = 'text-align: right; align-items: flex-end;';
+                liAlignStyle = 'justify-content: flex-end;';
+                gridItemAlignStyle = 'justify-content: flex-end; text-align: right;';
+                headerAlignStyle = 'text-align: right; margin-left: auto; margin-right: 0;';
+              }
+
+              const template = slide.template ? slide.template.toUpperCase() : (i === 0 ? 'A' : (i % 2 === 1 ? 'B' : 'C'));
+
+              if (template === 'A') {
+                // TEMPLATE A (Hero / Big Statement)
+                layoutHtml = `
+                  <div class="w-[11in] h-[8.5in] p-16 flex flex-col justify-center items-center text-center border my-4" style="background-color: ${pdfBg}; border-color: ${pdfBorderColor}; border-top: 6px solid ${hex}; page-break-after: always; box-sizing: border-box; font-family: 'Inter', sans-serif; position: relative;">
+                    <!-- Centered radial background glow -->
+                    <div style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, ${hex}0c, ${hex2}06, transparent 55%); pointer-events: none;"></div>
+                    
+                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; ${alignStyle} position: relative; z-index: 10;">
+                      
+                      <h2 style="font-size: 38px; font-weight: 800; color: ${pdfTitleColor}; line-height: 1.2; margin: 0 0 24px 0; max-width: 800px;">
+                        ${slide.title}
+                      </h2>
+
+                      <div style="width: 100%; max-width: 650px; margin: 0 auto; color: ${pdfBulletColor}; ${alignStyle}">
+                        ${slide.bulletPoints.map((point: string) => `
+                          <p style="font-size: 18px; line-height: 1.5; margin: 0 0 12px 0;">
+                            ${point.replace(/\*\*(.*?)\*\*/g, `<strong style="font-weight: bold; color: ${pdfBoldColor};">$1</strong>`)}
+                          </p>
+                        `).join('')}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              } else if (template === 'B') {
+                // TEMPLATE B (The Split View)
+                layoutHtml = `
+                  <div class="w-[11in] h-[8.5in] p-16 flex flex-col justify-center border my-4" style="background-color: ${pdfBg}; border-color: ${pdfBorderColor}; border-top: 6px solid ${hex}; page-break-after: always; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 40px; align-items: center; width: 100%;">
+                        
+                        <!-- Left (3 cols) -->
+                        <div style="grid-column: span 3; display: flex; flex-direction: column; justify-content: center; ${alignStyle}">
+                          <div style="display: flex; align-items: start; margin-bottom: 20px; width: 100%; ${alignment === 'center' ? 'justify-content: center;' : (alignment === 'right' ? 'justify-content: flex-end;' : 'justify-content: flex-start;')}">
+                            <div style="background: linear-gradient(to bottom, ${hex}, ${hex2}); width: 6px; height: 32px; border-radius: 9999px; margin-right: 14px; flex-shrink: 0;"></div>
+                            <h2 style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1.2; color: ${pdfTitleColor};">
+                              ${slide.title}
+                            </h2>
+                          </div>
+                          <ul style="list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; color: ${pdfBulletColor}; width: 100%;">
+                            ${slide.bulletPoints.map((point: string) => `
+                              <li style="font-size: 16px; display: flex; align-items: start; line-height: 1.5; ${liAlignStyle}">
+                                <span style="color: ${hex2}; margin-right: 12px;">•</span>
+                                <span>${point.replace(/\*\*(.*?)\*\*/g, `<strong style="font-weight: bold; color: ${pdfBoldColor};">$1</strong>`)}</span>
+                              </li>
+                            `).join('')}
+                          </ul>
+                        </div>
+
+                        <!-- Right (2 cols) - Premium Abstract Geometric Visual -->
+                        <div style="grid-column: span 2; display: flex; align-items: center; justify-content: center;">
+                          <div style="width: 100%; aspect-ratio: 4/3; border-radius: 16px; border: 1px solid ${hex}30; background: linear-gradient(135deg, rgba(15,15,22,0.85) 0%, ${hex}15 100%), #0D0D12; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 12px ${hex}10;">
+                            <div style="position: absolute; width: 150px; height: 150px; border-radius: 9999px; border: 1px dashed ${hex}20;"></div>
+                            <div style="position: absolute; width: 100px; height: 100px; border-radius: 9999px; border: 1px dashed ${hex2}25;"></div>
+                            <div style="width: 60px; height: 60px; border-radius: 9999px; border: 1px solid ${hex}50; background: linear-gradient(135deg, ${hex}15, ${hex2}15); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px ${hex}30;">
+                              <div style="width: 12px; height: 12px; border-radius: 9999px; background-color: ${hex2}; box-shadow: 0 0 10px ${hex2};"></div>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                `;
+              } else {
+                // TEMPLATE C (The Wide Grid)
+                layoutHtml = `
+                  <div class="w-[11in] h-[8.5in] p-16 flex flex-col justify-center border my-4" style="background-color: ${pdfBg}; border-color: ${pdfBorderColor}; border-top: 6px solid ${hex}; page-break-after: always; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                      
+                      <div style="margin-bottom: 24px; width: 100%; ${headerAlignStyle}">
+                        <h2 style="font-size: 28px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.2; color: ${pdfTitleColor};">
+                          ${slide.title}
+                        </h2>
+                        <div style="background: linear-gradient(to right, ${hex}, ${hex2}); opacity: 0.35; height: 2px; width: 100%; border-radius: 9999px;"></div>
+                      </div>
+
+                      <ul style="list-style-type: none; padding: 0; margin: 16px 0 0 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; color: ${pdfBulletColor}; width: 100%;">
+                        ${slide.bulletPoints.map((point: string) => `
+                          <li style="font-size: 16px; display: flex; align-items: start; line-height: 1.5; border: 1px solid ${isLightTheme ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)'}; background-color: ${isLightTheme ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'}; padding: 12px; border-radius: 12px; ${gridItemAlignStyle}">
+                            <span style="color: ${hex2}; margin-right: 12px; margin-top: 2px;">•</span>
+                            <span>${point.replace(/\*\frac{.*?}{.*?}/g, '').replace(/\*\*(.*?)\*\*/g, `<strong style="font-weight: bold; color: ${pdfBoldColor};">$1</strong>`)}</span>
+                          </li>
+                        `).join('')}
+                      </ul>
+
+                    </div>
+                  </div>
+                `;
+              }
+
+              return layoutHtml;
+            }).join('');
+          }
+
+          const opt = {
+            margin: 0,
+            filename: `${activeDeck.companyName || 'PitchDeck'}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+          };
+
+          html2pdf().from(renderContainer).set(opt).save().then(() => {
+            document.body.removeChild(overlay);
+            document.body.removeChild(renderContainer);
+          }).catch((err: any) => {
+            console.error("PDF generation failed:", err);
+            document.body.removeChild(overlay);
+            document.body.removeChild(renderContainer);
+          });
+        });
+      }
+
+      if (btnRunAnalysis && textareaConcept && terminalLogs) {
+        // Clone the button to remove all existing event listeners attached by the simulation script
+        const newBtn = btnRunAnalysis.cloneNode(true) as HTMLButtonElement;
+        btnRunAnalysis.parentNode?.replaceChild(newBtn, btnRunAnalysis);
+
+        newBtn.addEventListener('click', async (e: Event) => {
+          e.preventDefault();
+
+          const startupName = inputStartupName ? inputStartupName.value.trim() : '';
+          const color1 = inputBrandColor1 ? inputBrandColor1.value.trim() : '#6C63FF';
+          const color2 = inputBrandColor2 ? inputBrandColor2.value.trim() : '#3DDC97';
+          const themeModeNode = document.querySelector('input[name="theme-mode"]:checked') as HTMLInputElement;
+          const themeMode = themeModeNode ? themeModeNode.value : 'Dark Mode';
+          const text = textareaConcept.value.trim();
+
+          if (!startupName) {
+            alert('Please enter a Startup Name.');
+            return;
+          }
+
+          if (!color1 || !color2) {
+            alert('Please enter both brand colors.');
+            return;
+          }
+
+          if (!text) {
+            alert('Please enter a concept or idea first.');
+            return;
+          }
+
+          activeColorTheme = themeMode;
+
+          // Disable button and show "Processing..." state
+          newBtn.disabled = true;
+          const originalHTML = newBtn.innerHTML;
+          newBtn.innerHTML = '<span>Processing...</span>';
+
+          // Clear terminal logs
+          terminalLogs.innerHTML = '';
+
+          const logsContainer = terminalLogs as HTMLElement;
+          const appendLog = (message: string, isError = false) => {
+            const row = document.createElement('p');
+            row.className = isError 
+              ? 'text-red-500 font-mono animate-fade-in' 
+              : 'text-green-400 font-mono';
+            row.innerHTML = `<span class="text-pitchpro-accent">&gt;</span> ${message}`;
+            logsContainer.appendChild(row);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+          };
+
+          try {
+            // Log: Ingesting raw document...
+            appendLog('// Ingesting raw document...');
+
+            // Fetch generate-deck
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            const sessionToken = currentSession?.access_token;
+
+            const deckRes = await fetch('/api/generate-deck', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                ...(sessionToken ? { 'Authorization': `Bearer ${sessionToken}` } : {})
+              },
+              body: JSON.stringify({ 
+                rawIdea: text, 
+                competitionFormat: 'Standard',
+                startupName,
+                color1,
+                color2,
+                themeMode
+              })
+            });
+
+            if (!deckRes.ok) {
+              const errData = await deckRes.json().catch(() => ({}));
+              throw new Error(`Deck generation failed: ${errData.error || deckRes.statusText}`);
+            }
+
+            const deckJSON = await deckRes.json();
+
+            // Log: Deck skeleton mapped. Generating assets & simulating judge panel...
+            appendLog('// Deck skeleton mapped. Generating assets & simulating judge panel...');
+
+            // Step 1: Sequential Fetch for Copy
+            const copyRes = await fetch('/api/generate-copy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ deckJSON })
+            });
+
+            if (!copyRes.ok) {
+              const errData = await copyRes.json().catch(() => ({}));
+              throw new Error(`Copy generation failed: ${errData.error || copyRes.statusText}`);
+            }
+
+            const copyJSON = await copyRes.json();
+
+            // Log: Copy generated. Simulating judge panel...
+            appendLog('// Copy generated. Simulating judge panel...');
+
+            // Step 2: Sequential Fetch for Q&A
+            const qaRes = await fetch('/api/generate-qa', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ deckJSON })
+            });
+
+            if (!qaRes.ok) {
+              const errData = await qaRes.json().catch(() => ({}));
+              throw new Error(`Q&A generation failed: ${errData.error || qaRes.statusText}`);
+            }
+
+            const qaJSON = await qaRes.json();
+
+            // Save copyJSON for rendering scripts
+            activeCopy = copyJSON;
+
+            // Render all payloads to the DOM
+            renderDeck(deckJSON);
+            renderSummary(deckJSON.companyName, copyJSON.executiveSummary, copyJSON.elevatorPitch);
+            renderQA(qaJSON.predictedJudgeQuestions);
+
+            // Log: Generation Complete. Assets unlocked.
+            appendLog('// Generation Complete. Assets unlocked.');
+
+            // Unlock the dashboard tabs
+            generationDone = true;
+            unlockTabs();
+            showToastMessage("Analysis Complete! All pitch materials unlocked.");
+
+            // Auto-switch to Pitch Deck tab
+            const navDeck = document.getElementById('nav-deck');
+            if (navDeck) {
+              navDeck.click();
+            }
+
+          } catch (error: any) {
+            console.error('API Interactivity Error:', error);
+            appendLog(`Error: ${error.message || error}`, true);
+          } finally {
+            // Re-enable button and reset its text
+            newBtn.disabled = false;
+            newBtn.innerHTML = originalHTML;
+          }
+        });
+      }
+    });
+  </script>
+
+</Layout>
