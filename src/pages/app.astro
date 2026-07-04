@@ -399,6 +399,16 @@ import {
                 <input type="range" id="input-text-sizing" min="0.8" max="1.3" step="0.05" value="1" class="w-full sm:w-36 accent-pitchpro-accent h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
                 <span id="text-sizing-val" class="font-mono text-[10px] text-gray-400 w-12 text-right">1.00x</span>
               </div>
+              <!-- Theme Selection Dropdown -->
+              <div class="flex items-center gap-3">
+                <span class="font-bold text-gray-400 uppercase tracking-wider text-[10px] whitespace-nowrap">Theme</span>
+                <select id="select-presentation-theme" class="bg-[#0B0B0F] border border-white/10 hover:border-pitchpro-accent focus:border-pitchpro-accent rounded-xl px-3 py-1.5 text-xs text-white outline-none cursor-pointer font-semibold transition-all">
+                  <option value="vanguard">✦ Vanguard Dark</option>
+                  <option value="glassmorphic">❄ Frosted Glass</option>
+                  <option value="cyberpunk">⚡ Cyber Neon</option>
+                  <option value="editorial">✏ Creamy Editorial</option>
+                </select>
+              </div>
               <!-- Export PDF Button -->
               <button 
                 id="btn-export-pdf" 
@@ -413,8 +423,11 @@ import {
             <!-- Slide Board (16:9 Aspect Ratio) -->
             <div id="slide-canvas" class="aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#0B0B0F] border border-gray-800/60 shadow-[0_0_0_1px_rgba(255,255,255,0.01)] p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none">
               
-              <!-- Background highlights -->
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(108,99,255,0.06),transparent_60%)] pointer-events-none"></div>
+              <!-- Background highlights / Dotted Grids / Orbs -->
+              <div id="slide-background-grid" class="absolute inset-0 pointer-events-none transition-all duration-300"></div>
+              <div id="slide-bg-orb-1" class="absolute -top-24 -left-24 w-80 h-80 rounded-full blur-[100px] pointer-events-none transition-all duration-500"></div>
+              <div id="slide-bg-orb-2" class="absolute -bottom-24 -right-24 w-80 h-80 rounded-full blur-[100px] pointer-events-none transition-all duration-500"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(108,99,255,0.06),transparent_60%)] pointer-events-none" id="slide-bg-default-glow"></div>
               
                <!-- Dynamic Slide Content Areas (Javascript Swaps) -->
               <div class="flex-1 py-6 flex flex-col justify-center text-left" id="slide-dynamic-content">
@@ -1880,6 +1893,7 @@ import {
       let activeCopy: any = null;
       let activeColorTheme = '';
       let currentSlideIndex = 0;
+      let activeTheme = 'vanguard';
 
       // Unlocking tabs logic
       const unlockTabs = () => {
@@ -1908,6 +1922,15 @@ import {
           unlockedBanner.classList.remove('hidden');
         }
       };
+
+      // Theme selection event listener
+      const themeSelector = document.getElementById('select-presentation-theme') as HTMLSelectElement;
+      themeSelector?.addEventListener('change', (e) => {
+        activeTheme = (e.target as HTMLSelectElement).value;
+        if (activeDeck) {
+          renderSlide(currentSlideIndex);
+        }
+      });
 
       // Toast function
       const showToastMessage = (msg: string) => {
@@ -2213,19 +2236,31 @@ import {
           scaleText.textContent = `${scale.toFixed(2)}x`;
         }
 
-        const isLightTheme = activeColorTheme.toLowerCase().includes('white') || 
-                             activeColorTheme.toLowerCase().includes('light') || 
-                             activeColorTheme.toLowerCase().includes('bright');
+        const isEd = activeTheme === 'editorial';
+        const isGlass = activeTheme === 'glassmorphic';
+        const isCyber = activeTheme === 'cyberpunk';
 
-        const titleClass = isLightTheme 
-          ? "text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 leading-tight max-w-3xl flex-1 hover:bg-black/5 focus:outline-dashed focus:outline-gray-400 focus:bg-black/5 rounded px-1 transition outline-none" 
-          : "text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-tight max-w-3xl flex-1 hover:bg-white/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none";
+        // Dynamic fonts and text colors
+        const headingFont = isEd ? 'font-serif' : 'font-heading';
+        const headingColor = isEd ? 'text-[#1E293B]' : 'text-white';
+        const bulletColor = isEd ? 'text-[#334155]' : 'text-gray-300';
+        const boldTextColor = isEd ? 'text-[#0F172A] font-bold' : 'text-white font-bold';
 
-        const bulletTextHoverClass = isLightTheme 
+        const titleClass = isEd 
+          ? "text-xl sm:text-2xl font-serif font-extrabold tracking-tight text-[#1E293B] leading-tight max-w-3xl flex-1 hover:bg-black/5 focus:outline-dashed focus:outline-gray-400 focus:bg-black/5 rounded px-1 transition outline-none" 
+          : "text-xl sm:text-2xl font-heading font-extrabold tracking-tight text-white leading-tight max-w-3xl flex-1 hover:bg-white/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none";
+
+        const bulletTextHoverClass = isEd 
           ? "bullet-text flex-1 hover:bg-black/5 focus:outline-dashed focus:outline-gray-400 focus:bg-black/5 rounded px-1 transition outline-none" 
           : "bullet-text flex-1 hover:bg-white/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none";
 
-        const boldTextColor = isLightTheme ? 'text-slate-955 font-bold' : 'text-white font-bold';
+        // Frosted / Cyber card wrappers
+        let cardClass = 'slide-page-element flex flex-col justify-center w-full max-w-3xl mx-auto relative z-10 py-2';
+        if (isGlass) {
+          cardClass += ' backdrop-blur-md bg-white/[0.03] border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.37)] rounded-2xl p-6 sm:p-8';
+        } else if (isCyber) {
+          cardClass += ' bg-[#050B14]/80 border border-pitchpro-accent/40 rounded-xl p-6 shadow-[0_0_20px_rgba(108,99,255,0.15)]';
+        }
 
         // 1. Update slide dynamic content using Dynamic Layout Templates
         const slideDynamicContent = document.getElementById('slide-dynamic-content');
@@ -2236,15 +2271,15 @@ import {
             // TEMPLATE A: The Hero / Big Statement (Center-aligned layout, massive text)
             slideDynamicContent.innerHTML = `
               <div id="slide-scale-wrapper" class="w-full h-full" style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; display: flex; flex-direction: column; justify-content: center; align-items: ${alignment === 'center' ? 'center' : (alignment === 'right' ? 'flex-end' : 'flex-start')};">
-                <div class="slide-page-element flex flex-col justify-center ${alignClass} w-full max-w-3xl mx-auto relative z-10 py-2">
-                  <!-- Centered radial background glow -->
-                  <div style="background: radial-gradient(circle at 50% 50%, ${hex}0c, ${hex2}06, transparent 55%);" class="absolute inset-0 pointer-events-none"></div>
+                <div class="${cardClass} ${alignClass}">
+                  ${!isGlass && !isCyber ? `<!-- Centered radial background glow -->
+                  <div style="background: radial-gradient(circle at 50% 50%, ${hex}0c, ${hex2}06, transparent 55%);" class="absolute inset-0 pointer-events-none"></div>` : ''}
                   
-                  <h2 id="slide-title-editable" contenteditable="true" class="text-2.5xl sm:text-3.5xl lg:text-4xl font-extrabold tracking-tight ${isLightTheme ? 'text-slate-900' : 'text-white'} leading-tight mb-4 hover:bg-black/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none max-w-2xl relative z-10 w-full">
+                  <h2 id="slide-title-editable" contenteditable="true" class="text-2.5xl sm:text-3.5xl lg:text-4xl ${headingFont} font-extrabold tracking-tight ${headingColor} leading-tight mb-4 hover:bg-black/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none max-w-2xl relative z-10 w-full">
                     ${slide.title}
                   </h2>
 
-                  <div id="slide-bullets-editable" class="space-y-2.5 w-full max-w-xl mx-auto ${isLightTheme ? 'text-slate-700' : 'text-gray-300'} relative z-10">
+                  <div id="slide-bullets-editable" class="space-y-2.5 w-full max-w-xl mx-auto ${bulletColor} relative z-10">
                     ${slide.bulletPoints.map((point: string, i: number) => `
                       <p data-index="${i}" class="text-xs sm:text-sm leading-relaxed">
                         <span contenteditable="true" class="bullet-text hover:bg-white/5 focus:outline-dashed focus:outline-gray-600 focus:bg-white/5 rounded px-1 transition outline-none inline-block">
@@ -2260,7 +2295,7 @@ import {
             // TEMPLATE B: The Split View (Asymmetric 2-column: text left, premium geometric visual right)
             slideDynamicContent.innerHTML = `
               <div id="slide-scale-wrapper" class="w-full h-full" style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; display: flex; flex-direction: column; justify-content: center;">
-                <div class="slide-page-element flex flex-col justify-center h-full w-full">
+                <div class="${cardClass} h-full">
                   <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center w-full">
                     <!-- Left span (3 cols) -->
                     <div class="lg:col-span-3 flex flex-col justify-center ${alignClass}">
@@ -2271,7 +2306,7 @@ import {
                         </h2>
                       </div>
 
-                      <ul id="slide-bullets-editable" class="space-y-2.5 w-full ${isLightTheme ? 'text-slate-700' : 'text-gray-300'} leading-relaxed">
+                      <ul id="slide-bullets-editable" class="space-y-2.5 w-full ${bulletColor} leading-relaxed">
                         ${slide.bulletPoints.map((point: string, i: number) => `
                           <li data-index="${i}" class="flex items-start ${liAlignClass}">
                             <span style="color: ${hex2};" class="mr-2.5 shrink-0 select-none text-sm">•</span>
@@ -2285,23 +2320,24 @@ import {
 
                     <!-- Right span (2 cols) - Premium Abstract Geometric Visual -->
                     <div class="lg:col-span-2 hidden lg:flex items-center justify-center">
-                      <div class="w-full aspect-[4/3] rounded-2xl relative overflow-hidden select-none shadow-[0_0_50px_rgba(0,0,0,0.3)] group/box" style="background: linear-gradient(135deg, rgba(15,15,22,0.85) 30%, ${hex}20 100%), #0D0D12; border: 1px solid ${hex}30;">
+                      <div class="w-full aspect-[4/3] rounded-2xl relative overflow-hidden select-none shadow-[0_8px_32px_rgba(0,0,0,0.15)] group/box" style="background: ${isEd ? '#F0EDE9' : `linear-gradient(135deg, rgba(15,15,22,0.85) 30%, ${hex}20 100%), #0D0D12`}; border: 1px solid ${isEd ? '#E5E2DC' : `${hex}30`};">
                         <!-- Subtle inner border glow -->
-                        <div class="absolute inset-[1px] rounded-[15px] pointer-events-none" style="box-shadow: inset 0 0 12px 1px ${hex}15;"></div>
+                        ${!isEd ? `<div class="absolute inset-[1px] rounded-[15px] pointer-events-none" style="box-shadow: inset 0 0 12px 1px ${hex}15;"></div>` : ''}
                         
                         <!-- Smooth background orb glow -->
+                        ${!isEd ? `
                         <div style="background: radial-gradient(circle at 70% 30%, ${hex2}2a, transparent 70%);" class="absolute inset-0 pointer-events-none blur-xl"></div>
-                        <div style="background: radial-gradient(circle at 20% 80%, ${hex}1a, transparent 60%);" class="absolute inset-0 pointer-events-none blur-lg"></div>
+                        <div style="background: radial-gradient(circle at 20% 80%, ${hex}1a, transparent 60%);" class="absolute inset-0 pointer-events-none blur-lg"></div>` : ''}
 
                         <!-- Abstract geometric elements -->
                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <!-- Large rotating dashed circle -->
-                          <div style="border-color: ${hex}1a;" class="absolute w-44 h-44 rounded-full border border-dashed animate-[spin_40s_linear_infinite]"></div>
+                          <div style="border-color: ${isEd ? '#D4D0C9' : `${hex}1a`};" class="absolute w-44 h-44 rounded-full border border-dashed animate-[spin_40s_linear_infinite]"></div>
                           <!-- Medium dashed circle -->
-                          <div style="border-color: ${hex2}26;" class="absolute w-32 h-32 rounded-full border border-dashed animate-[spin_25s_linear_infinite_reverse]"></div>
+                          <div style="border-color: ${isEd ? '#D4D0C9' : `${hex2}26`};" class="absolute w-32 h-32 rounded-full border border-dashed animate-[spin_25s_linear_infinite_reverse]"></div>
                           
                           <!-- Sleek diagonal glassmorphic slab -->
-                          <div style="background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border-color: rgba(255,255,255,0.05);" class="absolute w-24 h-24 rounded-2xl border rotate-45 backdrop-blur-sm shadow-[0_8px_32px_0_rgba(0,0,0,0.2)]"></div>
+                          <div style="background: ${isEd ? 'rgba(0,0,0,0.02)' : 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)'}; border-color: ${isEd ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'};" class="absolute w-24 h-24 rounded-2xl border rotate-45 backdrop-blur-sm shadow-[0_8px_32px_0_rgba(0,0,0,0.1)]"></div>
                           
                           <!-- Center glowing point -->
                           <div style="background: linear-gradient(135deg, ${hex}, ${hex2}); box-shadow: 0 0 20px ${hex};" class="w-3.5 h-3.5 rounded-full z-10 animate-pulse"></div>
@@ -2316,15 +2352,15 @@ import {
             // TEMPLATE C: The Wide Grid (Full width title, accent divider, bullet grid below)
             slideDynamicContent.innerHTML = `
               <div id="slide-scale-wrapper" class="w-full h-full" style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; display: flex; flex-direction: column; justify-content: center;">
-                <div class="slide-page-element flex flex-col justify-center h-full w-full">
+                <div class="${cardClass} h-full">
                   <div class="mb-3 w-full ${headerAlignClass}">
                     <h2 id="slide-title-editable" contenteditable="true" class="${titleClass} mb-2 inline-block">
                       ${slide.title}
                     </h2>
-                    <div style="background: linear-gradient(to right, ${hex}, ${hex2}); opacity: 0.35;" class="h-0.5 w-full rounded-full"></div>
+                    <div style="background: linear-gradient(to right, ${hex}, ${hex2}); opacity: 0.35; height: 2px; width: 100%; border-radius: 9999px;"></div>
                   </div>
 
-                  <ul id="slide-bullets-editable" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 w-full ${isLightTheme ? 'text-slate-700' : 'text-gray-300'} leading-relaxed mt-1">
+                  <ul id="slide-bullets-editable" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 w-full ${bulletColor} leading-relaxed mt-1">
                     ${slide.bulletPoints.map((point: string, i: number) => `
                       <li data-index="${i}" class="flex items-start bg-white/[0.01] border border-white/[0.02] rounded-xl p-2.5 ${gridItemAlignClass}">
                         <span style="color: ${hex2};" class="mr-2.5 shrink-0 select-none text-sm mt-0.5">•</span>
@@ -2383,14 +2419,82 @@ import {
           });
         }
 
-        // Apply theme color border-top to slide canvas
+        // Apply theme-specific CSS variables and styles to slide canvas
         const slideCanvas = document.getElementById('slide-canvas');
+        const bgGrid = document.getElementById('slide-background-grid');
+        const bgOrb1 = document.getElementById('slide-bg-orb-1');
+        const bgOrb2 = document.getElementById('slide-bg-orb-2');
+        const defaultGlow = document.getElementById('slide-bg-default-glow');
+
         if (slideCanvas) {
+          // Set brand colors as CSS variables
+          slideCanvas.style.setProperty('--brand-color-1', hex);
+          slideCanvas.style.setProperty('--brand-color-2', hex2);
+          
+          // Clear styles and attributes first
+          slideCanvas.style.backgroundColor = '';
+          slideCanvas.style.backgroundImage = '';
+          slideCanvas.style.borderColor = '';
+          slideCanvas.style.boxShadow = '';
           slideCanvas.style.borderTop = `4px solid ${hex}`;
-          if (isLightTheme) {
-            slideCanvas.className = "aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#F9F9FB] border border-gray-200 shadow-[0_0_0_1px_rgba(0,0,0,0.02)] p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none";
-          } else {
-            slideCanvas.className = "aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#0B0B0F] border border-gray-800/60 shadow-[0_0_0_1px_rgba(255,255,255,0.01)] p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none";
+
+          if (bgGrid) {
+            bgGrid.style.backgroundImage = '';
+            bgGrid.style.opacity = '0';
+          }
+          if (bgOrb1) {
+            bgOrb1.style.backgroundColor = '';
+            bgOrb1.style.opacity = '0';
+          }
+          if (bgOrb2) {
+            bgOrb2.style.backgroundColor = '';
+            bgOrb2.style.opacity = '0';
+          }
+          if (defaultGlow) {
+            defaultGlow.style.display = 'none';
+          }
+
+          // Apply selected theme styling
+          if (activeTheme === 'vanguard') {
+            slideCanvas.className = "aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#0B0B0F] border border-gray-800/60 shadow-2xl p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none transition-all duration-300";
+            if (bgOrb1) {
+              bgOrb1.style.backgroundColor = hex;
+              bgOrb1.style.opacity = '0.08';
+            }
+            if (bgOrb2) {
+              bgOrb2.style.backgroundColor = hex2;
+              bgOrb2.style.opacity = '0.08';
+            }
+            if (defaultGlow) defaultGlow.style.display = 'block';
+          } else if (activeTheme === 'glassmorphic') {
+            slideCanvas.className = "aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-gradient-to-br from-[#0F172A] to-[#020617] border border-slate-800 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none transition-all duration-300";
+            if (bgOrb1) {
+              bgOrb1.style.backgroundColor = hex;
+              bgOrb1.style.opacity = '0.25';
+            }
+            if (bgOrb2) {
+              bgOrb2.style.backgroundColor = hex2;
+              bgOrb2.style.opacity = '0.25';
+            }
+          } else if (activeTheme === 'cyberpunk') {
+            slideCanvas.className = "aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#030712] border border-pitchpro-accent/30 shadow-[0_0_20px_rgba(108,99,255,0.15)] p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none transition-all duration-300";
+            if (bgGrid) {
+              bgGrid.style.backgroundImage = `radial-gradient(${hex}15 1px, transparent 1px)`;
+              bgGrid.style.backgroundSize = '20px 20px';
+              bgGrid.style.opacity = '1';
+            }
+            if (bgOrb1) {
+              bgOrb1.style.backgroundColor = hex;
+              bgOrb1.style.opacity = '0.15';
+            }
+            if (bgOrb2) {
+              bgOrb2.style.backgroundColor = hex2;
+              bgOrb2.style.opacity = '0.15';
+            }
+          } else if (activeTheme === 'editorial') {
+            slideCanvas.className = "aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-[#FAF8F5] border border-[#E5E2DC] shadow-lg p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden select-none transition-all duration-300";
+            slideCanvas.style.borderTop = `4px solid ${hex}`;
+            // Light editorial layout doesn't use orbs/grids
           }
         }
 
@@ -2689,23 +2793,41 @@ import {
 
             if (renderContainer) {
               let hex = activeDeck.themeHexCode || '#6C63FF';
-            if (!hex.startsWith('#')) {
-              hex = '#' + hex;
-            }
-            let hex2 = activeDeck.themeHexCode2 || '#3DDC97';
-            if (!hex2.startsWith('#')) {
-              hex2 = '#' + hex2;
-            }
+              if (!hex.startsWith('#')) {
+                hex = '#' + hex;
+              }
+              let hex2 = activeDeck.themeHexCode2 || '#3DDC97';
+              if (!hex2.startsWith('#')) {
+                hex2 = '#' + hex2;
+              }
 
-            // Render clean presentation layouts (ONLY title and bulletPoints, keeping live user edits)
-            const isLightTheme = activeColorTheme.toLowerCase().includes('white') || 
-                                 activeColorTheme.toLowerCase().includes('light') || 
-                                 activeColorTheme.toLowerCase().includes('bright');
-            const pdfBg = isLightTheme ? '#F9F9FB' : '#0B0B0F';
-            const pdfTitleColor = isLightTheme ? '#0F172A' : '#ffffff';
-            const pdfBulletColor = isLightTheme ? '#334155' : '#D1D5DB';
-            const pdfBoldColor = isLightTheme ? '#0F172A' : '#ffffff';
-            const pdfBorderColor = isLightTheme ? '#E2E8F0' : '#1F2937';
+              // Render clean presentation layouts matching activeTheme styling
+            const isEd = activeTheme === 'editorial';
+            const isGlass = activeTheme === 'glassmorphic';
+            const isCyber = activeTheme === 'cyberpunk';
+
+            // Background styles
+            let pdfBg = '#0B0B0F';
+            let pdfBorderColor = '#1F2937';
+            let pdfTitleColor = '#ffffff';
+            let pdfBulletColor = '#D1D5DB';
+            let pdfBoldColor = '#ffffff';
+            let pdfHeadingFont = "font-family: 'Inter', sans-serif;";
+
+            if (isEd) {
+              pdfBg = '#FAF8F5';
+              pdfBorderColor = '#E5E2DC';
+              pdfTitleColor = '#1E293B';
+              pdfBulletColor = '#334155';
+              pdfBoldColor = '#0F172A';
+              pdfHeadingFont = "font-family: 'Georgia', 'Times New Roman', serif;";
+            } else if (isGlass) {
+              pdfBg = '#020617';
+              pdfBorderColor = 'rgba(255,255,255,0.08)';
+            } else if (isCyber) {
+              pdfBg = '#030712';
+              pdfBorderColor = `${hex}40`;
+            }
 
             renderContainer.innerHTML = activeDeck.slides.map((slide: any, i: number) => {
               let layoutHtml = '';
@@ -2729,18 +2851,30 @@ import {
                 headerAlignStyle = 'text-align: right; margin-left: auto; margin-right: 0;';
               }
 
+              // Card wrapper styling inside PDF slide
+              let pdfCardStyle = '';
+              if (isGlass) {
+                pdfCardStyle = `backdrop-filter: blur(12px); background-color: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px; box-shadow: 0 8px 32px rgba(0,0,0,0.37);`;
+              } else if (isCyber) {
+                pdfCardStyle = `background-color: rgba(5,11,20,0.8); border: 1px solid ${hex}40; border-radius: 12px; padding: 24px; box-shadow: 0 0 20px ${hex}25;`;
+              }
+
               const template = slide.template ? slide.template.toUpperCase() : (i === 0 ? 'A' : (i % 2 === 1 ? 'B' : 'C'));
 
               if (template === 'A') {
                 // TEMPLATE A (Hero / Big Statement)
                 layoutHtml = `
                   <div class="w-[11in] h-[8.5in] p-16 flex flex-col justify-center items-center text-center border my-4" style="background-color: ${pdfBg}; border-color: ${pdfBorderColor}; border-top: 6px solid ${hex}; page-break-after: always; box-sizing: border-box; font-family: 'Inter', sans-serif; position: relative;">
-                    <!-- Centered radial background glow -->
-                    <div style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, ${hex}0c, ${hex2}06, transparent 55%); pointer-events: none;"></div>
+                    <!-- Background grids / orbs -->
+                    ${isCyber ? `<div style="position: absolute; inset: 0; background-image: radial-gradient(${hex}15 1px, transparent 1px); background-size: 20px 20px; pointer-events: none;"></div>` : ''}
+                    ${isGlass || isCyber ? `
+                      <div style="position: absolute; top: -100px; left: -100px; width: 300px; height: 300px; border-radius: 9999px; background-color: ${hex}; filter: blur(100px); opacity: ${isGlass ? 0.25 : 0.15}; pointer-events: none;"></div>
+                      <div style="position: absolute; bottom: -100px; right: -100px; width: 300px; height: 300px; border-radius: 9999px; background-color: ${hex2}; filter: blur(100px); opacity: ${isGlass ? 0.25 : 0.15}; pointer-events: none;"></div>
+                    ` : (isEd ? '' : `<div style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, ${hex}0c, ${hex2}06, transparent 55%); pointer-events: none;"></div>`)}
                     
-                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; ${alignStyle} position: relative; z-index: 10;">
+                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; ${alignStyle} position: relative; z-index: 10; ${pdfCardStyle}">
                       
-                      <h2 style="font-size: 38px; font-weight: 800; color: ${pdfTitleColor}; line-height: 1.2; margin: 0 0 24px 0; max-width: 800px;">
+                      <h2 style="font-size: 38px; font-weight: 800; color: ${pdfTitleColor}; line-height: 1.2; margin: 0 0 24px 0; max-width: 800px; ${pdfHeadingFont}">
                         ${slide.title}
                       </h2>
 
@@ -2757,15 +2891,22 @@ import {
               } else if (template === 'B') {
                 // TEMPLATE B (The Split View)
                 layoutHtml = `
-                  <div class="w-[11in] h-[8.5in] p-16 flex flex-col justify-center border my-4" style="background-color: ${pdfBg}; border-color: ${pdfBorderColor}; border-top: 6px solid ${hex}; page-break-after: always; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                  <div class="w-[11in] h-[8.5in] p-16 flex flex-col justify-center border my-4" style="background-color: ${pdfBg}; border-color: ${pdfBorderColor}; border-top: 6px solid ${hex}; page-break-after: always; box-sizing: border-box; font-family: 'Inter', sans-serif; position: relative;">
+                    <!-- Background grids / orbs -->
+                    ${isCyber ? `<div style="position: absolute; inset: 0; background-image: radial-gradient(${hex}15 1px, transparent 1px); background-size: 20px 20px; pointer-events: none;"></div>` : ''}
+                    ${isGlass || isCyber ? `
+                      <div style="position: absolute; top: -100px; left: -100px; width: 300px; height: 300px; border-radius: 9999px; background-color: ${hex}; filter: blur(100px); opacity: ${isGlass ? 0.25 : 0.15}; pointer-events: none;"></div>
+                      <div style="position: absolute; bottom: -100px; right: -100px; width: 300px; height: 300px; border-radius: 9999px; background-color: ${hex2}; filter: blur(100px); opacity: ${isGlass ? 0.25 : 0.15}; pointer-events: none;"></div>
+                    ` : ''}
+
+                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; ${pdfCardStyle}">
                       <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 40px; align-items: center; width: 100%;">
                         
                         <!-- Left (3 cols) -->
                         <div style="grid-column: span 3; display: flex; flex-direction: column; justify-content: center; ${alignStyle}">
                           <div style="display: flex; align-items: start; margin-bottom: 20px; width: 100%; ${alignment === 'center' ? 'justify-content: center;' : (alignment === 'right' ? 'justify-content: flex-end;' : 'justify-content: flex-start;')}">
                             <div style="background: linear-gradient(to bottom, ${hex}, ${hex2}); width: 6px; height: 32px; border-radius: 9999px; margin-right: 14px; flex-shrink: 0;"></div>
-                            <h2 style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1.2; color: ${pdfTitleColor};">
+                            <h2 style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1.2; color: ${pdfTitleColor}; ${pdfHeadingFont}">
                               ${slide.title}
                             </h2>
                           </div>
@@ -2781,11 +2922,11 @@ import {
 
                         <!-- Right (2 cols) - Premium Abstract Geometric Visual -->
                         <div style="grid-column: span 2; display: flex; align-items: center; justify-content: center;">
-                          <div style="width: 100%; aspect-ratio: 4/3; border-radius: 16px; border: 1px solid ${hex}30; background: linear-gradient(135deg, rgba(15,15,22,0.85) 0%, ${hex}15 100%), #0D0D12; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 12px ${hex}10;">
-                            <div style="position: absolute; width: 150px; height: 150px; border-radius: 9999px; border: 1px dashed ${hex}20;"></div>
-                            <div style="position: absolute; width: 100px; height: 100px; border-radius: 9999px; border: 1px dashed ${hex2}25;"></div>
-                            <div style="width: 60px; height: 60px; border-radius: 9999px; border: 1px solid ${hex}50; background: linear-gradient(135deg, ${hex}15, ${hex2}15); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px ${hex}30;">
-                              <div style="width: 12px; height: 12px; border-radius: 9999px; background-color: ${hex2}; box-shadow: 0 0 10px ${hex2};"></div>
+                          <div style="width: 100%; aspect-ratio: 4/3; border-radius: 16px; border: 1px solid ${isEd ? '#E5E2DC' : `${hex}30`}; background: ${isEd ? '#F0EDE9' : `linear-gradient(135deg, rgba(15,15,22,0.85) 0%, ${hex}15 100%), #0D0D12`}; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: ${isEd ? 'none' : `inset 0 0 12px ${hex}10`};">
+                            <div style="position: absolute; width: 150px; height: 150px; border-radius: 9999px; border: 1px dashed ${isEd ? '#D4D0C9' : `${hex}20`};"></div>
+                            <div style="position: absolute; width: 100px; height: 100px; border-radius: 9999px; border: 1px dashed ${isEd ? '#D4D0C9' : `${hex2}25`};"></div>
+                            <div style="width: 60px; height: 60px; border-radius: 9999px; border: 1px solid ${isEd ? 'rgba(0,0,0,0.05)' : `${hex}50`}; background: ${isEd ? 'rgba(0,0,0,0.02)' : `linear-gradient(135deg, ${hex}15, ${hex2}15)`}; display: flex; align-items: center; justify-content: center; box-shadow: ${isEd ? 'none' : `0 0 20px ${hex}30`};">
+                              <div style="width: 12px; height: 12px; border-radius: 9999px; background-color: ${hex2}; ${isEd ? '' : `box-shadow: 0 0 10px ${hex2};`}"></div>
                             </div>
                           </div>
                         </div>
@@ -2797,11 +2938,18 @@ import {
               } else {
                 // TEMPLATE C (The Wide Grid)
                 layoutHtml = `
-                  <div class="w-[11in] h-[8.5in] p-16 flex flex-col justify-center border my-4" style="background-color: ${pdfBg}; border-color: ${pdfBorderColor}; border-top: 6px solid ${hex}; page-break-after: always; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                  <div class="w-[11in] h-[8.5in] p-16 flex flex-col justify-center border my-4" style="background-color: ${pdfBg}; border-color: ${pdfBorderColor}; border-top: 6px solid ${hex}; page-break-after: always; box-sizing: border-box; font-family: 'Inter', sans-serif; position: relative;">
+                    <!-- Background grids / orbs -->
+                    ${isCyber ? `<div style="position: absolute; inset: 0; background-image: radial-gradient(${hex}15 1px, transparent 1px); background-size: 20px 20px; pointer-events: none;"></div>` : ''}
+                    ${isGlass || isCyber ? `
+                      <div style="position: absolute; top: -100px; left: -100px; width: 300px; height: 300px; border-radius: 9999px; background-color: ${hex}; filter: blur(100px); opacity: ${isGlass ? 0.25 : 0.15}; pointer-events: none;"></div>
+                      <div style="position: absolute; bottom: -100px; right: -100px; width: 300px; height: 300px; border-radius: 9999px; background-color: ${hex2}; filter: blur(100px); opacity: ${isGlass ? 0.25 : 0.15}; pointer-events: none;"></div>
+                    ` : ''}
+
+                    <div style="transform: scale(${scale}); transform-origin: ${alignment === 'center' ? 'center center' : (alignment === 'right' ? 'top right' : 'top left')}; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; ${pdfCardStyle}">
                       
                       <div style="margin-bottom: 24px; width: 100%; ${headerAlignStyle}">
-                        <h2 style="font-size: 28px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.2; color: ${pdfTitleColor};">
+                        <h2 style="font-size: 28px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.2; color: ${pdfTitleColor}; ${pdfHeadingFont}">
                           ${slide.title}
                         </h2>
                         <div style="background: linear-gradient(to right, ${hex}, ${hex2}); opacity: 0.35; height: 2px; width: 100%; border-radius: 9999px;"></div>
@@ -2809,7 +2957,7 @@ import {
 
                       <ul style="list-style-type: none; padding: 0; margin: 16px 0 0 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; color: ${pdfBulletColor}; width: 100%;">
                         ${slide.bulletPoints.map((point: string) => `
-                          <li style="font-size: 16px; display: flex; align-items: start; line-height: 1.5; border: 1px solid ${isLightTheme ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)'}; background-color: ${isLightTheme ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'}; padding: 12px; border-radius: 12px; ${gridItemAlignStyle}">
+                          <li style="font-size: 16px; display: flex; align-items: start; line-height: 1.5; border: 1px solid ${isEd ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.03)'}; background-color: ${isEd ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'}; padding: 12px; border-radius: 12px; ${gridItemAlignStyle}">
                             <span style="color: ${hex2}; margin-right: 12px; margin-top: 2px;">•</span>
                             <span>${point.replace(/\*\frac{.*?}{.*?}/g, '').replace(/\*\*(.*?)\*\*/g, `<strong style="font-weight: bold; color: ${pdfBoldColor};">$1</strong>`)}</span>
                           </li>
