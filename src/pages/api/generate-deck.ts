@@ -18,6 +18,7 @@ export const POST: APIRoute = async ({ request }) => {
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   let user: any = null;
+  let authenticatedSupabase = supabase;
   const authHeader = request.headers.get('Authorization');
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
@@ -25,6 +26,11 @@ export const POST: APIRoute = async ({ request }) => {
       const { data: { user: authUser }, error: authError } = await supabase.auth.getUser(token);
       if (!authError && authUser) {
         user = authUser;
+        authenticatedSupabase = createClient(
+          supabaseUrl,
+          supabaseAnonKey,
+          { global: { headers: { Authorization: `Bearer ${token}` } } }
+        );
       } else if (authError) {
         console.error('Supabase Auth verification error:', authError);
       }
@@ -195,14 +201,17 @@ ${competitionFormat}`,
     // 2. SAVE TO DB: Save the pitch deck to Supabase if the user is logged in
     if (user) {
       try {
-        const { error: dbError } = await supabase
+        const { data: dbData, error: dbError } = await authenticatedSupabase
           .from('pitch_decks')
-          .insert({ user_id: user.id, deck_json: payload });
+          .insert({ user_id: user.id, deck_json: payload })
+          .select('id')
+          .single();
         
         if (dbError) {
           console.error('Failed to save pitch deck to Supabase:', dbError);
-        } else {
-          console.log('Successfully saved pitch deck to Supabase for user:', user.id);
+        } else if (dbData) {
+          console.log('Successfully saved pitch deck to Supabase with ID:', dbData.id);
+          payload.dbId = dbData.id;
         }
       } catch (dbErr) {
         console.error('Database insert exception while saving pitch deck:', dbErr);
@@ -262,6 +271,26 @@ ${competitionFormat}`,
         }
       ]
     };
+
+    // 2. SAVE TO DB: Save the fallback pitch deck to Supabase if the user is logged in
+    if (user) {
+      try {
+        const { data: dbData, error: dbError } = await authenticatedSupabase
+          .from('pitch_decks')
+          .insert({ user_id: user.id, deck_json: fallbackPayload })
+          .select('id')
+          .single();
+        
+        if (dbError) {
+          console.error('Failed to save fallback pitch deck to Supabase:', dbError);
+        } else if (dbData) {
+          console.log('Successfully saved fallback pitch deck to Supabase with ID:', dbData.id);
+          fallbackPayload.dbId = dbData.id;
+        }
+      } catch (dbErr) {
+        console.error('Database insert exception while saving fallback pitch deck:', dbErr);
+      }
+    }
 
     return new Response(JSON.stringify(fallbackPayload), {
       status: 200,

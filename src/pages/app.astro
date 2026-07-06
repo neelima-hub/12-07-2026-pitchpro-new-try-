@@ -447,7 +447,7 @@ import {
 
               <!-- Slide Footer -->
               <div class="flex justify-between items-center text-[9px] text-gray-500 border-t border-white/5 pt-4">
-                <span>Confidential - For Review Only</span>
+                <span></span>
                 <div class="flex items-center space-x-3">
                   <span id="slide-theme-indicator"></span>
                   <span id="slide-counter-badge" class="text-[9px] font-mono bg-white/5 px-2 py-0.5 rounded text-gray-400">SLIDE 1/6</span>
@@ -1890,10 +1890,31 @@ import {
 
       // Active data payloads for navigation and rendering
       let activeDeck: any = null;
+      let activeDeckDbId: string | null = null;
       let activeCopy: any = null;
       let activeColorTheme = '';
       let currentSlideIndex = 0;
       let activeTheme = 'vanguard';
+
+      // Function to persist client-side slide changes back to Supabase database
+      const updateDbDeck = async () => {
+        if (!activeDeck || !activeDeckDbId) return;
+        try {
+          const { error } = await supabase
+            .from('pitch_decks')
+            .update({ deck_json: activeDeck })
+            .eq('id', activeDeckDbId);
+          
+          if (error) {
+            console.error('Error updating saved deck in Supabase:', error);
+          } else {
+            console.log('Successfully updated saved deck in Supabase with ID:', activeDeckDbId);
+            loadSavedDecks();
+          }
+        } catch (err) {
+          console.error('Failed to update Supabase deck:', err);
+        }
+      };
 
       // Unlocking tabs logic
       const unlockTabs = () => {
@@ -1927,7 +1948,11 @@ import {
       const themeSelector = document.getElementById('select-presentation-theme') as HTMLSelectElement;
       themeSelector?.addEventListener('change', (e) => {
         activeTheme = (e.target as HTMLSelectElement).value;
+        localStorage.setItem('pitchpro_activeTheme', activeTheme);
         if (activeDeck) {
+          activeDeck.selectedTheme = activeTheme;
+          localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
+          updateDbDeck();
           renderSlide(currentSlideIndex);
         }
       });
@@ -2062,8 +2087,12 @@ import {
                 generationDone = true;
                 unlockTabs();
                 
-                // Render the deck
                 renderDeck(savedDeck);
+                
+                // Save to LocalStorage
+                localStorage.setItem('pitchpro_activeDeck', JSON.stringify(savedDeck));
+                localStorage.setItem('pitchpro_activeTheme', activeTheme);
+                localStorage.setItem('pitchpro_currentSlideIndex', '0');
                 
                 // Hide logs/terminal if switching tabs
                 const terminalContainer = document.getElementById('terminal-logs');
@@ -2077,6 +2106,17 @@ import {
                 const fallbackPitch = firstSlide?.title || `Welcome to ${savedDeck.companyName}. We are ready to present our pitch.`;
                 
                 renderSummary(savedDeck.companyName, fallbackSummary, fallbackPitch);
+
+                const fallbackCopy = {
+                  executiveSummary: fallbackSummary,
+                  elevatorPitch: fallbackPitch,
+                  presentationScripts: savedDeck.slides.map((slide: any) => ({
+                    slideNumber: slide.slideNumber,
+                    spokenText: `Welcome to our presentation. On this slide, we are presenting our topic: ${slide.title || "Overview"}.`
+                  }))
+                };
+                activeCopy = fallbackCopy;
+                localStorage.setItem('pitchpro_activeCopy', JSON.stringify(fallbackCopy));
 
                 const fallbackQuestions = [
                   {
@@ -2099,6 +2139,7 @@ import {
                   }
                 ];
                 renderQA(fallbackQuestions);
+                localStorage.setItem('pitchpro_activeQA', JSON.stringify(fallbackQuestions));
 
                 // Show Toast
                 showToastMessage(`Loaded saved deck: ${savedDeck.companyName}`);
@@ -2179,6 +2220,7 @@ import {
       const renderSlide = (index: number) => {
         if (!activeDeck) return;
         currentSlideIndex = index;
+        localStorage.setItem('pitchpro_currentSlideIndex', index.toString());
 
         const slides = activeDeck.slides;
         const slide = slides[index];
@@ -2401,6 +2443,7 @@ import {
             editableTitle.addEventListener('blur', () => {
               if (activeDeck && activeDeck.slides[currentSlideIndex]) {
                 activeDeck.slides[currentSlideIndex].title = editableTitle.innerText.trim();
+                localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
               }
             });
           }
@@ -2414,6 +2457,7 @@ import {
               if (idxAttr && activeDeck && activeDeck.slides[currentSlideIndex]) {
                 const bulletIdx = parseInt(idxAttr, 10);
                 activeDeck.slides[currentSlideIndex].bulletPoints[bulletIdx] = htmlEl.innerHTML;
+                localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
               }
             });
           });
@@ -2636,6 +2680,7 @@ import {
         const slide = activeDeck.slides[currentSlideIndex];
         if (!slide) return;
         slide.alignment = alignment;
+        localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
         
         // Re-render slide to apply styling classes
         renderSlide(currentSlideIndex);
@@ -2660,6 +2705,7 @@ import {
           
           if (activeDeck && activeDeck.slides[currentSlideIndex]) {
             activeDeck.slides[currentSlideIndex].scale = val;
+            localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
           }
         });
       }
@@ -2770,6 +2816,7 @@ import {
 
             // Create temporary full-screen overlay (visible for snapshot rendering, but moved offscreen)
             const overlay = document.createElement('div');
+            overlay.id = "pdf-loading-overlay";
             overlay.className = "fixed inset-0 bg-[#0B0B0F] z-[9999] flex flex-col items-center justify-center text-white";
             overlay.innerHTML = `
               <div class="flex flex-col items-center gap-4">
@@ -2783,10 +2830,10 @@ import {
             const renderContainer = document.createElement('div');
             renderContainer.id = "pdf-render-container";
             renderContainer.style.position = "absolute";
-            renderContainer.style.left = "0";
+            renderContainer.style.left = "-9999px";
             renderContainer.style.top = "0";
             renderContainer.style.width = "11in";
-            renderContainer.style.opacity = "0.01";
+            renderContainer.style.opacity = "1";
             renderContainer.style.zIndex = "-1000";
             renderContainer.style.pointerEvents = "none";
             document.body.appendChild(renderContainer);
@@ -2986,13 +3033,14 @@ import {
 
             await html2pdf().from(renderContainer).set(opt).save();
 
-            document.body.removeChild(overlay);
+            const overlayEl = document.getElementById('pdf-loading-overlay');
+            if (overlayEl) document.body.removeChild(overlayEl);
             document.body.removeChild(renderContainer);
           }
         } catch (error: any) {
           console.error("PDF generation failed:", error);
-          const overlay = document.querySelector('.fixed.inset-0.bg-\\[\\#0B0B0F\\].z-\\[9999\\]');
-          if (overlay) document.body.removeChild(overlay);
+          const overlayEl = document.getElementById('pdf-loading-overlay');
+          if (overlayEl) document.body.removeChild(overlayEl);
           const renderContainer = document.getElementById('pdf-render-container');
           if (renderContainer) document.body.removeChild(renderContainer);
           alert("Export failed: " + error.message);
@@ -3119,6 +3167,13 @@ import {
             // Save copyJSON for rendering scripts
             activeCopy = copyJSON;
 
+            // Save to LocalStorage
+            localStorage.setItem('pitchpro_activeDeck', JSON.stringify(deckJSON));
+            localStorage.setItem('pitchpro_activeCopy', JSON.stringify(copyJSON));
+            localStorage.setItem('pitchpro_activeQA', JSON.stringify(qaJSON.predictedJudgeQuestions));
+            localStorage.setItem('pitchpro_activeTheme', activeTheme);
+            localStorage.setItem('pitchpro_currentSlideIndex', '0');
+
             // Render all payloads to the DOM
             renderDeck(deckJSON);
             renderSummary(deckJSON.companyName, copyJSON.executiveSummary, copyJSON.elevatorPitch);
@@ -3146,8 +3201,52 @@ import {
           }
         });
       }
+
+      // RESTORE LOCAL STORAGE PROGRESS
+      try {
+        const savedDeckStr = localStorage.getItem('pitchpro_activeDeck');
+        const savedCopyStr = localStorage.getItem('pitchpro_activeCopy');
+        const savedQAStr = localStorage.getItem('pitchpro_activeQA');
+        const savedTheme = localStorage.getItem('pitchpro_activeTheme');
+        const savedSlideIdx = localStorage.getItem('pitchpro_currentSlideIndex');
+
+        if (savedDeckStr) {
+          const parsedDeck = JSON.parse(savedDeckStr);
+          activeDeck = parsedDeck;
+          (window as any).activeDeck = parsedDeck;
+
+          if (savedTheme) {
+            activeTheme = savedTheme;
+            const themeSelector = document.getElementById('select-presentation-theme') as HTMLSelectElement;
+            if (themeSelector) themeSelector.value = savedTheme;
+          }
+
+          generationDone = true;
+          unlockTabs();
+
+          renderDeck(parsedDeck);
+
+          if (savedCopyStr) {
+            activeCopy = JSON.parse(savedCopyStr);
+            renderSummary(parsedDeck.companyName, activeCopy.executiveSummary, activeCopy.elevatorPitch);
+          }
+
+          if (savedQAStr) {
+            renderQA(JSON.parse(savedQAStr));
+          }
+
+          if (savedSlideIdx) {
+            const idx = parseInt(savedSlideIdx, 10);
+            if (idx >= 0 && idx < parsedDeck.slides.length) {
+              renderSlide(idx);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to restore deck progress from localStorage:', err);
+      }
     });
   </script>
 
-  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script is:inline src="/html2pdf.bundle.min.js"></script>
 </Layout>
