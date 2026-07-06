@@ -2456,22 +2456,52 @@ import {
             }
           }
 
-          // Attach listeners to save edits back to activeDeck.slides in memory
+          // Attach listeners to save edits back to activeDeck.slides in memory on input and blur
           const editableTitle = document.getElementById('slide-title-editable');
           if (editableTitle) {
+            // Instantly update activeDeck in memory and localStorage on every key stroke
+            editableTitle.addEventListener('input', () => {
+              if (activeDeck && activeDeck.slides[currentSlideIndex]) {
+                activeDeck.slides[currentSlideIndex].title = editableTitle.innerText.trim();
+                localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
+                
+                // Update sidebar selector outline title text dynamically
+                const sidebarBtn = document.querySelector(`.slide-selector-btn[data-slide="${currentSlideIndex}"] span.truncate`);
+                if (sidebarBtn) {
+                  sidebarBtn.textContent = activeDeck.slides[currentSlideIndex].title;
+                }
+              }
+            });
+            // Update Supabase when they blur (finish typing / click away)
             editableTitle.addEventListener('blur', () => {
               if (activeDeck && activeDeck.slides[currentSlideIndex]) {
                 activeDeck.slides[currentSlideIndex].title = editableTitle.innerText.trim();
                 localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
                 updateDbDeck();
+                
+                const sidebarBtn = document.querySelector(`.slide-selector-btn[data-slide="${currentSlideIndex}"] span.truncate`);
+                if (sidebarBtn) {
+                  sidebarBtn.textContent = activeDeck.slides[currentSlideIndex].title;
+                }
               }
             });
           }
 
           const editableBullets = document.querySelectorAll('#slide-bullets-editable .bullet-text');
           editableBullets.forEach((el) => {
-            el.addEventListener('blur', () => {
-              const htmlEl = el as HTMLElement;
+            const htmlEl = el as HTMLElement;
+            // Instantly update activeDeck in memory and localStorage on every keystroke
+            htmlEl.addEventListener('input', () => {
+              const parentElement = htmlEl.closest('[data-index]');
+              const idxAttr = parentElement?.getAttribute('data-index');
+              if (idxAttr && activeDeck && activeDeck.slides[currentSlideIndex]) {
+                const bulletIdx = parseInt(idxAttr, 10);
+                activeDeck.slides[currentSlideIndex].bulletPoints[bulletIdx] = htmlEl.innerHTML;
+                localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
+              }
+            });
+            // Update Supabase when they blur (finish typing / click away)
+            htmlEl.addEventListener('blur', () => {
               const parentElement = htmlEl.closest('[data-index]');
               const idxAttr = parentElement?.getAttribute('data-index');
               if (idxAttr && activeDeck && activeDeck.slides[currentSlideIndex]) {
@@ -2482,6 +2512,7 @@ import {
               }
             });
           });
+
         }
 
         // Apply theme-specific CSS variables and styles to slide canvas
@@ -2702,6 +2733,7 @@ import {
         if (!slide) return;
         slide.alignment = alignment;
         localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
+        updateDbDeck();
         
         // Re-render slide to apply styling classes
         renderSlide(currentSlideIndex);
@@ -2728,6 +2760,10 @@ import {
             activeDeck.slides[currentSlideIndex].scale = val;
             localStorage.setItem('pitchpro_activeDeck', JSON.stringify(activeDeck));
           }
+        });
+
+        inputTextSizing.addEventListener('change', () => {
+          updateDbDeck();
         });
       }
 
