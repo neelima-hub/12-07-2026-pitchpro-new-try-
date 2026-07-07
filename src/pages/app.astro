@@ -3363,11 +3363,12 @@ import {
               const cleanName = companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
               const pdfFilename = `${cleanName}-deck.pdf`;
 
-              const html2canvasFn = (window as any).html2canvas;
-              const jsPDFClass = (window as any).jsPDF || ((window as any).jspdf && (window as any).jspdf.jsPDF) || (window as any).jspdf;
+              const html2pdfFn = (window as any).html2pdf;
+              const html2canvasFn = html2pdfFn?.html2canvas || (window as any).html2canvas;
+              const jsPDFClass = html2pdfFn?.jsPDF || (window as any).jsPDF || ((window as any).jspdf && (window as any).jspdf.jsPDF) || (window as any).jspdf;
 
               if (!html2canvasFn || !jsPDFClass) {
-                throw new Error("PDF generation dependencies (html2canvas or jsPDF) are not loaded.");
+                throw new Error("PDF generation dependencies (html2canvas or jsPDF) are not loaded. html2pdf presence: " + !!html2pdfFn);
               }
 
               // Wait 500ms for browser to parse, render, and perform layout calculations on the newly injected DOM elements
