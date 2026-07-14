@@ -291,7 +291,7 @@ import Layout from '../layouts/Layout.astro';
   // Get redirect path from query param
   function getRedirectPath() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('redirect') || '/app';
+    return urlParams.get('redirect') || '/dashboard';
   }
 
   // Form submission handler

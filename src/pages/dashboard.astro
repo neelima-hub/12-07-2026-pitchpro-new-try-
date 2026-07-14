@@ -1,0 +1,538 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { 
+  FileText, 
+  Sparkles, 
+  Layers, 
+  Mic, 
+  Trash2, 
+  Plus, 
+  LogOut, 
+  ArrowRight, 
+  TrendingUp, 
+  Trophy, 
+  Folder,
+  User,
+  Compass
+} from 'lucide-astro';
+---
+
+<Layout title="Dashboard - PitchPro" description="Manage your AI pitch decks, market research and rehearsal sessions.">
+  <div class="min-h-screen bg-[#0B0B0F] text-white font-body relative overflow-x-hidden flex flex-col">
+    
+    <!-- Background Glows -->
+    <div class="absolute top-0 right-1/4 w-[600px] h-[600px] bg-pitchpro-accent/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-10 left-10 w-[300px] h-[300px] bg-pitchpro-accent/5 rounded-full blur-[100px] pointer-events-none z-0"></div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0B0B0F]/80 backdrop-blur-md">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        
+        <!-- Logo -->
+        <a href="/" class="flex items-center space-x-3 group">
+          <img 
+            src="/logo.jpeg" 
+            alt="PitchPro Logo" 
+            class="h-8 w-8 rounded-lg object-cover border border-white/10 transition-transform group-hover:scale-105" 
+          />
+          <span class="font-heading font-bold text-lg tracking-tight bg-gradient-to-r from-white via-pitchpro-accent to-pitchpro-accent bg-clip-text text-transparent">
+            PitchPro
+          </span>
+          <span class="text-[9px] bg-pitchpro-accent/20 text-pitchpro-accent px-1.5 py-0.5 rounded font-mono font-bold tracking-widest">
+            DASHBOARD
+          </span>
+        </a>
+
+        <!-- User controls -->
+        <div class="flex items-center space-x-4">
+          <div class="hidden sm:flex items-center space-x-2.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
+            <div class="w-6 h-6 rounded-full bg-pitchpro-accent/20 flex items-center justify-center text-[10px] font-bold text-pitchpro-accent">
+              <User class="h-3 w-3" />
+            </div>
+            <span id="user-badge-email" class="text-xs text-gray-300 font-mono">Loading...</span>
+          </div>
+
+          <button 
+            id="btn-logout"
+            class="flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-gray-400 hover:text-red-400 text-xs font-semibold rounded-xl transition-all duration-200 cursor-pointer"
+          >
+            <LogOut class="h-3.5 w-3.5" />
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 z-10">
+      
+      <!-- Greeting and Header Banner -->
+      <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 id="welcome-title" class="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-white">
+            Welcome back, Innovator! 👋
+          </h1>
+          <p class="text-sm text-gray-400 mt-1">
+            Build, test, and polish your pitches from your central workspace.
+          </p>
+        </div>
+        <div>
+          <a 
+            href="/app"
+            class="inline-flex items-center gap-2 px-5 py-3 bg-pitchpro-accent hover:bg-pitchpro-accent-hover text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-pitchpro-accent/25 hover:shadow-pitchpro-accent/40 active:scale-[0.98]"
+          >
+            <Plus class="h-4.5 w-4.5" />
+            <span>Create New Pitch</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Overview Stats Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+        <!-- Stat Card 1 -->
+        <div class="glass-dark p-5 rounded-2xl border border-white/10 flex items-center justify-between">
+          <div class="space-y-1">
+            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Saved Decks</p>
+            <h3 id="stat-total-decks" class="text-2xl sm:text-3xl font-bold font-mono text-white">--</h3>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-pitchpro-accent/15 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent">
+            <Folder class="h-5 w-5" />
+          </div>
+        </div>
+
+        <!-- Stat Card 2 -->
+        <div class="glass-dark p-5 rounded-2xl border border-white/10 flex items-center justify-between">
+          <div class="space-y-1">
+            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Rehearsal Score</p>
+            <h3 id="stat-coach-score" class="text-2xl sm:text-3xl font-bold font-mono text-pitchpro-success">N/A</h3>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-pitchpro-success/15 border border-pitchpro-success/25 flex items-center justify-center text-pitchpro-success">
+            <Trophy class="h-5 w-5" />
+          </div>
+        </div>
+
+        <!-- Stat Card 3 -->
+        <div class="glass-dark p-5 rounded-2xl border border-white/10 flex items-center justify-between">
+          <div class="space-y-1">
+            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Account Plan</p>
+            <h3 class="text-2xl sm:text-3xl font-bold text-white">Sandbox</h3>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400">
+            <Compass class="h-5 w-5" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature / Utility Launcher Cards -->
+      <div class="mb-10">
+        <h2 class="text-lg font-heading font-bold text-white mb-4">Core PitchPro Tools</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          
+          <!-- Launch Card 1 -->
+          <a href="/app?tab=upload" class="group glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/40 bg-white/[0.01] hover:bg-white/[0.03] transition-all flex flex-col justify-between min-h-[140px]">
+            <div class="space-y-2">
+              <div class="w-9 h-9 rounded-lg bg-pitchpro-accent/10 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-colors group-hover:bg-pitchpro-accent group-hover:text-white">
+                <Layers class="h-4.5 w-4.5" />
+              </div>
+              <h3 class="text-sm font-bold text-white group-hover:text-pitchpro-accent transition-colors">Pitch Deck Builder</h3>
+              <p class="text-[11px] text-gray-400 leading-relaxed">Assemble structures, outline financials, and generate raw slide deck content.</p>
+            </div>
+            <div class="flex items-center text-[10px] font-bold text-pitchpro-accent mt-3 self-end group-hover:translate-x-1 transition-transform">
+              Launch <ArrowRight class="h-3 w-3 ml-1" />
+            </div>
+          </a>
+
+          <!-- Launch Card 2 -->
+          <a href="/app?tab=market" class="group glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/40 bg-white/[0.01] hover:bg-white/[0.03] transition-all flex flex-col justify-between min-h-[140px]">
+            <div class="space-y-2">
+              <div class="w-9 h-9 rounded-lg bg-pitchpro-accent/10 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-colors group-hover:bg-pitchpro-accent group-hover:text-white">
+                <Sparkles class="h-4.5 w-4.5" />
+              </div>
+              <h3 class="text-sm font-bold text-white group-hover:text-pitchpro-accent transition-colors">Market Analyzer</h3>
+              <p class="text-[11px] text-gray-400 leading-relaxed">Scan target demographics, outline key competitor vectors, and analyze SWOT segments.</p>
+            </div>
+            <div class="flex items-center text-[10px] font-bold text-pitchpro-accent mt-3 self-end group-hover:translate-x-1 transition-transform">
+              Launch <ArrowRight class="h-3 w-3 ml-1" />
+            </div>
+          </a>
+
+          <!-- Launch Card 3 -->
+          <a href="/app?tab=coach" class="group glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/40 bg-white/[0.01] hover:bg-white/[0.03] transition-all flex flex-col justify-between min-h-[140px]">
+            <div class="space-y-2">
+              <div class="w-9 h-9 rounded-lg bg-pitchpro-accent/10 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-colors group-hover:bg-pitchpro-accent group-hover:text-white">
+                <Mic class="h-4.5 w-4.5" />
+              </div>
+              <h3 class="text-sm font-bold text-white group-hover:text-pitchpro-accent transition-colors">Rehearsal Coach</h3>
+              <p class="text-[11px] text-gray-400 leading-relaxed">Practice pitch delivery into your mic. AI tracks fillers, timing, and rates confidence.</p>
+            </div>
+            <div class="flex items-center text-[10px] font-bold text-pitchpro-accent mt-3 self-end group-hover:translate-x-1 transition-transform">
+              Launch <ArrowRight class="h-3 w-3 ml-1" />
+            </div>
+          </a>
+
+          <!-- Launch Card 4 -->
+          <a href="/app?tab=summary" class="group glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/40 bg-white/[0.01] hover:bg-white/[0.03] transition-all flex flex-col justify-between min-h-[140px]">
+            <div class="space-y-2">
+              <div class="w-9 h-9 rounded-lg bg-pitchpro-accent/10 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-colors group-hover:bg-pitchpro-accent group-hover:text-white">
+                <FileText class="h-4.5 w-4.5" />
+              </div>
+              <h3 class="text-sm font-bold text-white group-hover:text-pitchpro-accent transition-colors">Executive Summaries</h3>
+              <p class="text-[11px] text-gray-400 leading-relaxed">Compile structural outlines, elevator copy summaries, and Q&A logs for stakeholders.</p>
+            </div>
+            <div class="flex items-center text-[10px] font-bold text-pitchpro-accent mt-3 self-end group-hover:translate-x-1 transition-transform">
+              Launch <ArrowRight class="h-3 w-3 ml-1" />
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Decks Grid Section -->
+      <section class="mb-12">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-6">
+          <h2 class="text-xl font-heading font-extrabold text-white">Your Saved Pitch Decks</h2>
+          <span id="saved-decks-count" class="text-xs bg-white/5 text-gray-400 font-mono font-bold px-2 py-0.5 rounded-full border border-white/10">0 Decks</span>
+        </div>
+
+        <!-- Decks Loading State -->
+        <div id="decks-loading" class="py-16 text-center">
+          <div class="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-pitchpro-accent rounded-full mb-3" role="status" aria-label="loading">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <p class="text-xs text-gray-500 font-mono">Fetching saved pitches from your secure dashboard...</p>
+        </div>
+
+        <!-- Decks Empty State -->
+        <div id="decks-empty" class="hidden py-16 px-4 text-center glass-dark rounded-2xl border border-white/5">
+          <Folder class="h-10 w-10 text-gray-600 mx-auto mb-3" />
+          <h3 class="text-sm font-bold text-white">No Saved Decks Found</h3>
+          <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">Start a fresh workspace layout or analyze a market segment to store templates dynamically.</p>
+          <a href="/app" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-pitchpro-accent/20 hover:bg-pitchpro-accent text-white text-xs font-semibold rounded-xl border border-pitchpro-accent/30 transition-all">
+            <Plus class="h-3.5 w-3.5" /> Start Pitching
+          </a>
+        </div>
+
+        <!-- Decks Grid List -->
+        <div id="decks-grid" class="hidden grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Dynamic Content Loaded Here -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Glassmorphic Footer -->
+    <footer class="mt-auto border-t border-white/5 bg-[#070709] py-6 text-center text-xs text-gray-500 font-mono shrink-0">
+      <div class="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p>© 2026 PitchPro AI. Secured Workspace Portal.</p>
+        <div class="flex items-center space-x-4">
+          <a href="/" class="hover:text-white transition-colors">Home</a>
+          <span>•</span>
+          <a href="/app" class="hover:text-white transition-colors">Workspace</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B0B0F]/70 backdrop-blur-sm hidden animate-fade-in" style="animation-duration: 200ms;">
+      <div class="glass-dark border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+        <h3 class="text-lg font-heading font-bold text-white mb-2">Delete Saved Pitch?</h3>
+        <p class="text-xs text-gray-400 leading-relaxed mb-6">
+          Are you sure you want to delete <span id="delete-deck-name" class="font-bold text-white font-mono">"Untitled Pitch"</span>? This action is permanent and cannot be undone. All rehearsal details, competitor analyses, and generated slides will be removed.
+        </p>
+        
+        <div class="flex justify-end items-center gap-3">
+          <button 
+            id="delete-modal-cancel" 
+            class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-semibold rounded-xl transition-all cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button 
+            id="delete-modal-confirm" 
+            class="px-4 py-2 bg-red-600 hover:bg-red-500 active:scale-[0.98] text-white text-xs font-semibold rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <span>Delete Permanently</span>
+            <svg id="delete-spinner" class="animate-spin h-3.5 w-3.5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  // State
+  let savedDecks: any[] = [];
+  let deleteTargetId: string | null = null;
+
+  // DOM Elements
+  const welcomeTitle = document.getElementById('welcome-title');
+  const userBadgeEmail = document.getElementById('user-badge-email');
+  const btnLogout = document.getElementById('btn-logout');
+  
+  const statTotalDecks = document.getElementById('stat-total-decks');
+  const statCoachScore = document.getElementById('stat-coach-score');
+  
+  const decksCount = document.getElementById('saved-decks-count');
+  const decksLoading = document.getElementById('decks-loading');
+  const decksEmpty = document.getElementById('decks-empty');
+  const decksGrid = document.getElementById('decks-grid');
+
+  const deleteModal = document.getElementById('delete-modal');
+  const deleteDeckName = document.getElementById('delete-deck-name');
+  const deleteCancelBtn = document.getElementById('delete-modal-cancel');
+  const deleteConfirmBtn = document.getElementById('delete-modal-confirm');
+  const deleteSpinner = document.getElementById('delete-spinner');
+
+  // Verify Session & Redirect if not logged in
+  async function verifySession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '/login?redirect=/dashboard';
+      return;
+    }
+    
+    // Set user profile greetings
+    const email = session.user.email;
+    const name = session.user.user_metadata?.full_name || email?.split('@')[0] || 'Innovator';
+    
+    if (welcomeTitle) welcomeTitle.textContent = `Welcome back, ${name}! 👋`;
+    if (userBadgeEmail) userBadgeEmail.textContent = email || 'Authenticated';
+
+    // Fetch user decks
+    fetchUserDecks();
+  }
+
+  // Fetch saved decks from Supabase
+  async function fetchUserDecks() {
+    if (!decksLoading || !decksEmpty || !decksGrid) return;
+    
+    decksLoading.classList.remove('hidden');
+    decksEmpty.classList.add('hidden');
+    decksGrid.classList.add('hidden');
+
+    try {
+      const { data, error } = await supabase
+        .from('pitch_decks')
+        .select('id, created_at, deck_json')
+        .order('created_at', { ascending: false });
+
+      decksLoading.classList.add('hidden');
+
+      if (error) {
+        console.error('Error fetching dashboard decks:', error);
+        decksGrid.innerHTML = `
+          <div class="col-span-full py-8 text-center text-xs text-red-400 font-mono">
+            Failed to fetch saved pitch decks: ${error.message}
+          </div>
+        `;
+        decksGrid.classList.remove('hidden');
+        return;
+      }
+
+      savedDecks = data || [];
+      updateDashboardStats();
+      renderDecksGrid();
+
+    } catch (err) {
+      console.error('Database connection exception:', err);
+      decksLoading.classList.add('hidden');
+      if (decksGrid) {
+        decksGrid.innerHTML = `
+          <div class="col-span-full py-8 text-center text-xs text-red-400 font-mono">
+            An unexpected error occurred while loading dashboard contents.
+          </div>
+        `;
+        decksGrid.classList.remove('hidden');
+      }
+    }
+  }
+
+  // Update counter and score stats
+  function updateDashboardStats() {
+    const totalCount = savedDecks.length;
+    
+    if (statTotalDecks) statTotalDecks.textContent = String(totalCount);
+    if (decksCount) decksCount.textContent = `${totalCount} ${totalCount === 1 ? 'Deck' : 'Decks'}`;
+
+    // Find highest rehearsal score if any deck contains coach score
+    let highestScore = 0;
+    let hasScores = false;
+
+    savedDecks.forEach(item => {
+      const deck = item.deck_json;
+      // Search for any saved finalScore or score elements inside deck_json
+      if (deck && typeof deck.rehearsalScore === 'number') {
+        highestScore = Math.max(highestScore, deck.rehearsalScore);
+        hasScores = true;
+      } else if (deck && deck.coachScorecard && typeof deck.coachScorecard.overallScore === 'number') {
+        highestScore = Math.max(highestScore, deck.coachScorecard.overallScore);
+        hasScores = true;
+      }
+    });
+
+    if (statCoachScore) {
+      if (hasScores) {
+        statCoachScore.textContent = `${highestScore}%`;
+      } else {
+        statCoachScore.textContent = 'N/A';
+      }
+    }
+  }
+
+  // Render HTML structures inside the grid
+  function renderDecksGrid() {
+    if (!decksGrid || !decksEmpty) return;
+
+    if (savedDecks.length === 0) {
+      decksEmpty.classList.remove('hidden');
+      return;
+    }
+
+    decksGrid.innerHTML = savedDecks.map(item => {
+      const deck = item.deck_json;
+      const companyName = deck?.companyName || 'Untitled Project';
+      const tagline = deck?.tagline || 'AI generated pitch structures';
+      const slideCount = deck?.slides?.length || 0;
+      const dateStr = new Date(item.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+
+      return `
+        <div 
+          class="group glass-dark rounded-2xl border border-white/10 hover:border-pitchpro-accent/40 bg-white/[0.01] hover:bg-white/[0.03] transition-all flex flex-col justify-between min-h-[160px] relative overflow-hidden"
+          data-id="${item.id}"
+        >
+          <!-- Accent Glow behind card -->
+          <div class="absolute -top-10 -right-10 w-24 h-24 bg-pitchpro-accent/5 rounded-full blur-xl group-hover:bg-pitchpro-accent/15 transition-all"></div>
+          
+          <div class="p-5 flex-grow">
+            <div class="flex items-start justify-between mb-3">
+              <span class="text-[9px] bg-pitchpro-accent/10 border border-pitchpro-accent/20 text-pitchpro-accent px-2 py-0.5 rounded font-mono font-bold">
+                ${slideCount} SLIDES
+              </span>
+              <span class="text-[10px] text-gray-500 font-mono">${dateStr}</span>
+            </div>
+            
+            <h3 class="text-base font-bold text-white group-hover:text-pitchpro-accent transition-colors truncate pr-4">${companyName}</h3>
+            <p class="text-xs text-gray-400 mt-1 line-clamp-2 leading-normal">${tagline}</p>
+          </div>
+
+          <div class="px-5 py-3.5 bg-white/[0.02] border-t border-white/5 flex items-center justify-between gap-4">
+            <a 
+              href="/app?id=${item.id}"
+              class="flex items-center text-xs font-semibold text-pitchpro-accent hover:text-white transition-colors"
+            >
+              Open Workspace <ArrowRight class="h-3.5 w-3.5 ml-1" />
+            </a>
+            
+            <button 
+              type="button" 
+              class="text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer btn-delete-deck"
+              data-id="${item.id}"
+              data-name="${companyName.replace(/"/g, '&quot;')}"
+              title="Delete Saved Pitch"
+            >
+              <!-- Manual SVG for Trash icon inside the generated HTML string -->
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    decksGrid.classList.remove('hidden');
+
+    // Attach Action Listeners to Delete Buttons
+    const deleteButtons = decksGrid.querySelectorAll('.btn-delete-deck');
+    deleteButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const id = btn.getAttribute('data-id');
+        const name = btn.getAttribute('data-name') || 'Untitled Pitch';
+        
+        openDeleteModal(id, name);
+      });
+    });
+  }
+
+  // Delete Modal Operations
+  function openDeleteModal(id: string | null, name: string) {
+    deleteTargetId = id;
+    if (deleteDeckName) deleteDeckName.textContent = `"${name}"`;
+    if (deleteModal) deleteModal.classList.remove('hidden');
+  }
+
+  function closeDeleteModal() {
+    deleteTargetId = null;
+    if (deleteModal) deleteModal.classList.add('hidden');
+    if (deleteSpinner) deleteSpinner.classList.add('hidden');
+    if (deleteConfirmBtn) deleteConfirmBtn.removeAttribute('disabled');
+  }
+
+  // Delete Confirmation Handler
+  async function confirmDeleteDeck() {
+    if (!deleteTargetId) return;
+
+    if (deleteConfirmBtn) deleteConfirmBtn.setAttribute('disabled', 'true');
+    if (deleteSpinner) deleteSpinner.classList.remove('hidden');
+
+    try {
+      const { error } = await supabase
+        .from('pitch_decks')
+        .delete()
+        .eq('id', deleteTargetId);
+
+      if (error) {
+        alert(`Failed to delete deck: ${error.message}`);
+      } else {
+        // Refresh grid data
+        fetchUserDecks();
+      }
+    } catch (err) {
+      console.error('Delete database error:', err);
+      alert('An unexpected database error occurred while deleting.');
+    } finally {
+      closeDeleteModal();
+    }
+  }
+
+  // Bind Actions
+  if (deleteCancelBtn) {
+    deleteCancelBtn.addEventListener('click', closeDeleteModal);
+  }
+  if (deleteModal) {
+    deleteModal.addEventListener('click', (e) => {
+      if (e.target === deleteModal) closeDeleteModal();
+    });
+  }
+  if (deleteConfirmBtn) {
+    deleteConfirmBtn.addEventListener('click', confirmDeleteDeck);
+  }
+
+  // Log Out Handler
+  if (btnLogout) {
+    btnLogout.addEventListener('click', async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+      }
+      window.location.href = '/';
+    });
+  }
+
+  // Initialize
+  verifySession();
+</script>

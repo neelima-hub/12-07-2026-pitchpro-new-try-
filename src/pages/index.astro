@@ -1117,7 +1117,7 @@ import {
             } else {
               showModalAlert('Login successful! Redirecting...', 'success');
               setTimeout(() => {
-                window.location.href = '/app';
+                window.location.href = '/dashboard';
               }, 800);
             }
           }
@@ -1131,24 +1131,45 @@ import {
       });
     }
 
-    // Intercept clicks on links pointing to /app and /login
-    document.querySelectorAll('a[href="/app"], a[href="/login"]').forEach(link => {
-      link.addEventListener('click', async (e) => {
-        const href = link.getAttribute('href');
-        if (href === '/login') {
+    // Dynamic Navbar adjustments and Link Interception
+    async function initAuthState() {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // Logged In: Modify buttons dynamically to go to Dashboard in a new tab
+        document.querySelectorAll('a[href="/login"]').forEach(link => {
+          link.setAttribute('href', '/dashboard');
+          link.setAttribute('target', '_blank');
+          link.textContent = 'Dashboard';
+        });
+
+        document.querySelectorAll('a[href="/app"]').forEach(link => {
+          link.setAttribute('href', '/dashboard');
+          link.setAttribute('target', '_blank');
+          if (link.textContent.includes('Start Building')) {
+            link.innerHTML = 'Go to Dashboard <svg class="ml-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>';
+          }
+        });
+      }
+
+      // Intercept clicks to handle modal auth or tab redirection
+      document.querySelectorAll('a[href="/app"], a[href="/login"], a[href="/dashboard"]').forEach(link => {
+        link.addEventListener('click', async (e) => {
+          const { data: { session: activeSession } } = await supabase.auth.getSession();
+          
+          if (activeSession) {
+            // Already logged in, let standard navigation with target="_blank" happen
+            return;
+          }
+
+          // Not logged in: intercept and trigger auth modal
           e.preventDefault();
           openModal();
-        } else if (href === '/app') {
-          e.preventDefault();
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            window.location.href = '/app';
-          } else {
-            openModal();
-          }
-        }
+        });
       });
-    });
+    }
+
+    initAuthState();
   </script>
 
 </Layout>

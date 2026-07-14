@@ -207,12 +207,15 @@ ${competitionFormat}`,
           .select('id')
           .single();
         
-        if (dbError) {
-          console.error('Failed to save pitch deck to Supabase:', dbError);
-        } else if (dbData) {
-          console.log('Successfully saved pitch deck to Supabase with ID:', dbData.id);
-          payload.dbId = dbData.id;
-        }
+        // if (dbError) {
+        //   console.error('Failed to save pitch deck to Supabase:', dbError);
+        // } else if (dbData) {
+        //   console.log('Successfully saved pitch deck to Supabase with ID:', dbData.id);
+        //   payload.dbId = dbData.id;
+        // }
+        if (dbData) {
+  payload.dbId = dbData.id;
+}
       } catch (dbErr) {
         console.error('Database insert exception while saving pitch deck:', dbErr);
       }
@@ -228,7 +231,7 @@ ${competitionFormat}`,
     console.error('API Error in /api/generate-deck:', error);
 
     // Construct a safe, structured fallback slide deck payload to keep the UI functioning
-    const fallbackPayload = {
+    const fallbackPayload: any = {
       companyName: startupName || "My Startup",
       themeHexCode: color1,
       themeHexCode2: color2,
@@ -281,12 +284,15 @@ ${competitionFormat}`,
           .select('id')
           .single();
         
-        if (dbError) {
-          console.error('Failed to save fallback pitch deck to Supabase:', dbError);
-        } else if (dbData) {
-          console.log('Successfully saved fallback pitch deck to Supabase with ID:', dbData.id);
-          fallbackPayload.dbId = dbData.id;
-        }
+          
+        // if (dbError) {
+        //   console.error('Failed to save fallback pitch deck to Supabase:', dbError);
+        // } else if (dbData) {
+        //   console.log('Successfully saved fallback pitch deck to Supabase with ID:', dbData.id);
+        //   fallbackPayload.dbId = dbData.id;
+        if (dbData) {
+  fallbackPayload.dbId = dbData.id;
+}
       } catch (dbErr) {
         console.error('Database insert exception while saving fallback pitch deck:', dbErr);
       }
