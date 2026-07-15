@@ -644,27 +644,98 @@ import {
     </div>
   </section>
 
-  <!-- Minimal Footer -->
-  <footer class="bg-[#08080C] py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="flex items-center space-x-3">
-        <img 
-          src="/logo.jpeg" 
-          alt="PitchPro Logo" 
-          class="h-7 w-7 rounded object-cover border border-white/10 shadow-sm" 
-        />
-        <span class="font-heading font-bold text-white tracking-tight text-lg">
-          PitchPro
-        </span>
+  <!-- Premium & Authentic Corporate Footer -->
+  <footer class="bg-[#07070A] border-t border-white/10 relative overflow-hidden pt-16 pb-12">
+    <!-- Decorative background glow inside the footer -->
+    <div class="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-pitchpro-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
+        <!-- Brand Segment -->
+        <div class="md:col-span-2 space-y-4">
+          <div class="flex items-center space-x-3">
+            <img 
+              src="/logo.jpeg" 
+              alt="PitchPro Logo" 
+              class="h-8 w-8 rounded-lg object-cover border border-white/10 shadow-md" 
+            />
+            <span class="font-heading font-bold text-white tracking-tight text-xl">
+              PitchPro AI
+            </span>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed max-w-sm">
+            PitchPro AI is an enterprise-grade pitch intelligence platform. We combine advanced generative AI slides structure, market demographics analysis, and simulated speech coaching to empower founders to pitch with absolute confidence.
+          </p>
+          <div class="pt-2 flex items-center space-x-3.5">
+            <span class="inline-flex items-center gap-1.5 text-[9px] bg-white/5 border border-white/10 text-gray-400 px-2 py-0.5 rounded font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              All Services Operational
+            </span>
+            <span class="text-[9px] bg-white/5 border border-white/10 text-gray-400 px-2 py-0.5 rounded font-mono">
+              SSL 256-bit Secured
+            </span>
+          </div>
+        </div>
+
+        <!-- Column 2: Platform -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-white tracking-wider uppercase">Platform Tools</h4>
+          <ul class="space-y-2 text-xs text-gray-400">
+            <li><a href="/app" class="hover:text-pitchpro-accent transition-colors">Pitch Deck Builder</a></li>
+            <li><a href="/market" class="hover:text-pitchpro-accent transition-colors">Market Niche Simulator</a></li>
+            <li><a href="/app?tab=coach" class="hover:text-pitchpro-accent transition-colors">Speech Coach & Q&A</a></li>
+            <li><a href="/app?tab=summary" class="hover:text-pitchpro-accent transition-colors">Executive Summary</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Resources -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-white tracking-wider uppercase">Compliance & Legal</h4>
+          <ul class="space-y-2 text-xs text-gray-400">
+            <li><a href="#" class="hover:text-pitchpro-accent transition-colors">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-pitchpro-accent transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-pitchpro-accent transition-colors">GDPR & CCPA Status</a></li>
+            <li><a href="#" class="hover:text-pitchpro-accent transition-colors">Security Architecture</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Newsletter -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-white tracking-wider uppercase">Platform Updates</h4>
+          <p class="text-[11px] text-gray-400 leading-normal">Get the latest platform releases, AI templates, and fundraise guides.</p>
+          <div class="space-y-2">
+            <input 
+              type="email" 
+              placeholder="founder@company.com" 
+              class="w-full px-3 py-2 text-xs bg-black/40 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-pitchpro-accent transition-all"
+            />
+            <button 
+              type="button" 
+              class="w-full py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-semibold rounded-lg border border-white/10 transition-all cursor-pointer"
+              onclick="alert('Thank you for subscribing!');"
+            >
+              Subscribe Newsletter
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="flex items-center space-x-8 text-xs font-semibold text-gray-400">
-        <a href="#how-it-works" class="hover:text-pitchpro-accent transition-colors">How It Works</a>
-        <a href="#features" class="hover:text-pitchpro-accent transition-colors">Features</a>
-        <a href="#audiences" class="hover:text-pitchpro-accent transition-colors">Who It's For</a>
+
+      <!-- Divider -->
+      <div class="h-px bg-white/15 my-6"></div>
+
+      <!-- Bottom Meta Area -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-[10px] text-gray-500 leading-relaxed max-w-xl text-center sm:text-left">
+          &copy; {new Date().getFullYear()} PitchPro AI Inc. All rights reserved. PitchPro AI is an independent software tool. Market insights, SWOT quadrants, and coaching answers are generated dynamically by large language models. Always verify actual financial projections and consult a legal professional before fundraise execution.
+        </p>
+        <div class="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+          <span>Hosted with</span>
+          <svg class="h-3 w-3 text-white inline fill-current" viewBox="0 0 115 100">
+            <path d="M57.5 0L115 100H0L57.5 0Z"/>
+          </svg>
+          <span class="font-bold text-white ml-0.5">Vercel Enterprise</span>
+        </div>
       </div>
-      <p class="text-xs text-gray-500">
-        &copy; {new Date().getFullYear()} PitchPro. All rights reserved. Built for champions.
-      </p>
     </div>
   </footer>
 

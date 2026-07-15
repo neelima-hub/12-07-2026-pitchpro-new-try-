@@ -1,0 +1,368 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { 
+  Sparkles, 
+  ArrowLeft,
+  Compass,
+  User,
+  Info
+} from 'lucide-astro';
+---
+
+<Layout title="Market Analyzer - PitchPro" description="Run AI-powered market intelligence and SWOT quadrant analysis for your startup niche.">
+  <div class="h-screen w-screen flex flex-col md:flex-row bg-[#0B0B0F] text-white overflow-hidden font-body">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-[#0B0B0F] border-b md:border-b-0 md:border-r border-white/10 flex flex-col shrink-0">
+      
+      <!-- Logo Header -->
+      <div class="p-4 sm:p-6 flex items-center justify-between shrink-0">
+        <a href="/dashboard" class="flex items-center space-x-3 group">
+          <img 
+            src="/logo.jpeg" 
+            alt="PitchPro Logo" 
+            class="h-8 w-8 rounded-lg object-cover border border-white/10" 
+          />
+          <span class="font-heading font-bold text-lg tracking-tight text-white">
+            PitchPro
+          </span>
+          <span class="text-[9px] bg-pitchpro-accent/20 text-pitchpro-accent px-1.5 py-0.5 rounded font-mono font-bold tracking-widest">
+            MARKET
+          </span>
+        </a>
+      </div>
+
+      <!-- Navigation links and Profile -->
+      <div class="flex flex-col flex-1 justify-between">
+        <div class="px-4 sm:px-6 pb-6">
+          <div class="h-px bg-white/10 my-4"></div>
+          
+          <a 
+            href="/dashboard"
+            class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+          >
+            <ArrowLeft class="h-4.5 w-4.5 text-pitchpro-accent" />
+            <span>Back to Dashboard</span>
+          </a>
+        </div>
+
+        <!-- Bottom Profile Details -->
+        <div class="p-4 sm:p-6 border-t border-white/5 flex flex-col gap-4">
+          <div class="flex items-center space-x-2.5">
+            <div id="profile-user-avatar" class="w-8 h-8 rounded-full bg-pitchpro-accent/20 border border-pitchpro-accent/30 flex items-center justify-center font-bold text-xs text-pitchpro-accent">
+              <User class="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <p id="profile-user-name" class="text-xs font-semibold text-white">Loading...</p>
+              <p class="text-[10px] text-gray-500">Free Plan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Content -->
+    <main class="flex-1 flex flex-col bg-[#111116] overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
+      
+      <!-- Decorative Background Glows -->
+      <div class="absolute top-0 right-1/4 w-[500px] h-[500px] bg-pitchpro-accent/10 rounded-full blur-[130px] pointer-events-none z-0"></div>
+      <div class="absolute bottom-10 left-10 w-[200px] h-[200px] bg-pitchpro-accent/5 rounded-full blur-[90px] pointer-events-none z-0"></div>
+
+      <!-- Content Container -->
+      <div class="max-w-4xl w-full mx-auto z-10 flex flex-col gap-6">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#09090C] border border-white/10 rounded-2xl p-6 sm:p-8 shadow-xl">
+          <div class="space-y-1">
+            <h1 class="font-heading font-extrabold text-2xl text-white flex items-center gap-2">
+              <Sparkles class="h-6 w-6 text-pitchpro-accent animate-pulse" />
+              Market Intelligence Analyzer
+            </h1>
+            <p class="text-xs text-gray-400">Run AI-powered market intelligence, target demographic mapping, core pain points analysis, and SWOT matrix generation.</p>
+          </div>
+        </div>
+
+        <!-- Analyzer Input Form Card -->
+        <div id="market-form-card" class="bg-[#09090C] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-300">Target Startup Niche</label>
+            <p class="text-xs text-gray-500">Provide a specific description of your industry, business model, and offering.</p>
+          </div>
+          <div class="space-y-4">
+            <input 
+              type="text" 
+              id="input-market-niche" 
+              placeholder="e.g. B2B SaaS for HR onboarding, AI-driven mental health app for students, etc." 
+              class="w-full px-4 py-3 text-sm rounded-xl bg-black/40 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-pitchpro-accent transition-all duration-200"
+            />
+            <button 
+              id="btn-analyze-market" 
+              type="button" 
+              class="w-full sm:w-auto px-6 py-3 text-sm font-bold rounded-xl text-white bg-gradient-to-r from-pitchpro-accent to-[#8B5CF6] hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_4px_12px_rgba(108,99,255,0.2)] flex items-center justify-center space-x-2 cursor-pointer"
+            >
+              <span>Analyze Niche Market</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading State Card -->
+        <div id="market-loading-state" class="hidden bg-[#09090C] border border-white/10 rounded-2xl p-12 flex flex-col items-center justify-center text-center space-y-4 shadow-xl">
+          <div class="relative">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-pitchpro-accent"></div>
+            <Sparkles class="h-5 w-5 text-pitchpro-accent absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+          </div>
+          <div class="space-y-1">
+            <p class="text-sm font-bold text-white">Running AI Market Simulation...</p>
+            <p class="text-xs text-gray-500 font-mono">Synthesizing demographics, pain points, industry trends, and SWOT quadrant...</p>
+          </div>
+        </div>
+
+        <!-- Results Display Card -->
+        <div id="market-analysis-results" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 id="market-results-title" class="font-heading font-bold text-lg text-white">Market Analysis Report</h2>
+            <button 
+              id="btn-reset-market" 
+              type="button" 
+              class="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-all font-semibold cursor-pointer"
+            >
+              Analyze Another Niche
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Target Demographics -->
+            <div class="bg-[#09090C] border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl">
+              <h3 class="font-bold text-[#3DDC97] flex items-center gap-2 text-sm">
+                <span class="w-2 h-2 rounded-full bg-[#3DDC97]"></span>
+                Target Demographics
+              </h3>
+              <ul id="market-demographics-list" class="list-disc list-inside text-gray-300 space-y-2.5 pl-1 leading-relaxed text-xs"></ul>
+            </div>
+
+            <!-- Core Pain Points -->
+            <div class="bg-[#09090C] border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl">
+              <h3 class="font-bold text-red-400 flex items-center gap-2 text-sm">
+                <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                Core Pain Points
+              </h3>
+              <ul id="market-painpoints-list" class="list-disc list-inside text-gray-300 space-y-2.5 pl-1 leading-relaxed text-xs"></ul>
+            </div>
+
+            <!-- Market Trends -->
+            <div class="bg-[#09090C] border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl">
+              <h3 class="font-bold text-pitchpro-accent flex items-center gap-2 text-sm">
+                <span class="w-2 h-2 rounded-full bg-pitchpro-accent"></span>
+                Market Trends
+              </h3>
+              <ul id="market-trends-list" class="list-disc list-inside text-gray-300 space-y-2.5 pl-1 leading-relaxed text-xs"></ul>
+            </div>
+          </div>
+
+          <!-- SWOT Analysis Matrix -->
+          <div class="bg-[#09090C] border border-white/10 rounded-2xl p-6 space-y-6 shadow-xl">
+            <h3 class="font-bold text-yellow-500 flex items-center gap-2 text-sm">
+              <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+              SWOT Analysis Matrix
+            </h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Strengths -->
+              <div class="bg-green-500/[0.02] border border-green-500/10 rounded-2xl p-5 space-y-3">
+                <span class="font-bold text-green-400 text-xs tracking-wider uppercase">Strengths</span>
+                <ul id="swot-strengths" class="text-xs text-gray-300 list-disc list-inside space-y-2 leading-relaxed pl-1"></ul>
+              </div>
+              
+              <!-- Weaknesses -->
+              <div class="bg-red-500/[0.02] border border-red-500/10 rounded-2xl p-5 space-y-3">
+                <span class="font-bold text-red-400 text-xs tracking-wider uppercase">Weaknesses</span>
+                <ul id="swot-weaknesses" class="text-xs text-gray-300 list-disc list-inside space-y-2 leading-relaxed pl-1"></ul>
+              </div>
+
+              <!-- Opportunities -->
+              <div class="bg-blue-500/[0.02] border border-blue-500/10 rounded-2xl p-5 space-y-3">
+                <span class="font-bold text-blue-400 text-xs tracking-wider uppercase">Opportunities</span>
+                <ul id="swot-opportunities" class="text-xs text-gray-300 list-disc list-inside space-y-2 leading-relaxed pl-1"></ul>
+              </div>
+
+              <!-- Threats -->
+              <div class="bg-yellow-500/[0.02] border border-yellow-500/10 rounded-2xl p-5 space-y-3">
+                <span class="font-bold text-yellow-400 text-xs tracking-wider uppercase">Threats</span>
+                <ul id="swot-threats" class="text-xs text-gray-300 list-disc list-inside space-y-2 leading-relaxed pl-1"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Toast Notification (Simulated) -->
+  <div id="app-toast" class="fixed bottom-6 right-6 z-50 bg-[#0B0B0F] border border-white/15 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2 text-xs font-semibold translate-y-20 opacity-0 transition-all duration-300">
+    <Sparkles class="h-4 w-4 text-pitchpro-accent" />
+    <span id="toast-message" class="text-white">Action completed successfully</span>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  // DOM Elements
+  const btnAnalyzeMarket = document.getElementById('btn-analyze-market') as HTMLButtonElement;
+  const inputMarketNiche = document.getElementById('input-market-niche') as HTMLInputElement;
+  const marketLoadingState = document.getElementById('market-loading-state');
+  const marketAnalysisResults = document.getElementById('market-analysis-results');
+  const marketFormCard = document.getElementById('market-form-card');
+  const btnResetMarket = document.getElementById('btn-reset-market');
+
+  // Verify Session & Redirect if not logged in
+  async function verifySession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '/login?redirect=/market';
+      return;
+    }
+    
+    // Dynamic profile loading
+    const email = session.user.email;
+    const name = session.user.user_metadata?.full_name || email?.split('@')[0] || 'User';
+    const userNameEl = document.getElementById('profile-user-name');
+    const userAvatarEl = document.getElementById('profile-user-avatar');
+    if (userNameEl) userNameEl.textContent = `${name}'s Account`;
+    if (userAvatarEl && name) {
+      userAvatarEl.innerHTML = `<span class="font-bold text-xs text-pitchpro-accent">${name[0].toUpperCase()}</span>`;
+    }
+    
+    // Check if progress exists in local storage on page load
+    checkAndRenderMarketAnalysis();
+  }
+
+  const renderMarketResults = (data: any) => {
+    const demographicsList = document.getElementById('market-demographics-list');
+    if (demographicsList && Array.isArray(data.targetDemographics)) {
+      demographicsList.innerHTML = data.targetDemographics.map((item: string) => `<li>${item}</li>`).join('');
+    }
+
+    const painPointsList = document.getElementById('market-painpoints-list');
+    if (painPointsList && Array.isArray(data.corePainPoints)) {
+      painPointsList.innerHTML = data.corePainPoints.map((item: string) => `<li>${item}</li>`).join('');
+    }
+
+    const trendsList = document.getElementById('market-trends-list');
+    if (trendsList && Array.isArray(data.marketTrends)) {
+      trendsList.innerHTML = data.marketTrends.map((item: string) => `<li>${item}</li>`).join('');
+    }
+
+    const swot = data.swotAnalysis || {};
+    const keys: ('strengths' | 'weaknesses' | 'opportunities' | 'threats')[] = ['strengths', 'weaknesses', 'opportunities', 'threats'];
+    keys.forEach(key => {
+      const listEl = document.getElementById(`swot-${key}`);
+      if (listEl) {
+        const listItems = Array.isArray(swot[key]) ? swot[key] : [];
+        listEl.innerHTML = listItems.map((item: string) => `<li>${item}</li>`).join('');
+      }
+    });
+
+    const resultsTitle = document.getElementById('market-results-title');
+    if (resultsTitle && data.niche) {
+      resultsTitle.textContent = `Market Analysis Report: ${data.niche}`;
+    } else if (resultsTitle) {
+      resultsTitle.textContent = `Market Analysis Report`;
+    }
+
+    if (marketFormCard) marketFormCard.classList.add('hidden');
+    if (marketLoadingState) marketLoadingState.classList.add('hidden');
+    if (marketAnalysisResults) marketAnalysisResults.classList.remove('hidden');
+  };
+
+  const showMarketForm = () => {
+    if (marketFormCard) marketFormCard.classList.remove('hidden');
+    if (marketLoadingState) marketLoadingState.classList.add('hidden');
+    if (marketAnalysisResults) marketAnalysisResults.classList.add('hidden');
+  };
+
+  const checkAndRenderMarketAnalysis = () => {
+    try {
+      const savedMarketData = localStorage.getItem('market_analysis_data');
+      if (savedMarketData) {
+        const data = JSON.parse(savedMarketData);
+        renderMarketResults(data);
+      } else {
+        showMarketForm();
+      }
+    } catch (e) {
+      console.error('Error parsing saved market analysis data:', e);
+      showMarketForm();
+    }
+  };
+
+  // Click handler to analyze a startup niche
+  if (btnAnalyzeMarket && inputMarketNiche) {
+    btnAnalyzeMarket.addEventListener('click', async () => {
+      const niche = inputMarketNiche.value.trim();
+      if (!niche) {
+        alert('Please enter a startup/business niche to analyze.');
+        return;
+      }
+
+      btnAnalyzeMarket.disabled = true;
+      const originalText = btnAnalyzeMarket.innerHTML;
+      btnAnalyzeMarket.innerHTML = '<span>Analyzing Market...</span>';
+      
+      if (marketLoadingState) marketLoadingState.classList.remove('hidden');
+      if (marketFormCard) marketFormCard.classList.add('hidden');
+      if (marketAnalysisResults) marketAnalysisResults.classList.add('hidden');
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const sessionToken = session?.access_token;
+
+        const res = await fetch('/api/analyze-market', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(sessionToken ? { 'Authorization': `Bearer ${sessionToken}` } : {})
+          },
+          body: JSON.stringify({ niche })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || res.statusText || 'Failed to analyze market');
+        }
+
+        const data = await res.json();
+        data.niche = niche;
+
+        // Save to localStorage
+        localStorage.setItem('market_analysis_data', JSON.stringify(data));
+
+        // Render results
+        renderMarketResults(data);
+
+      } catch (error: any) {
+        console.error('Market analysis failed:', error);
+        alert(`Analysis failed: ${error.message || error}`);
+        showMarketForm();
+      } finally {
+        btnAnalyzeMarket.disabled = false;
+        btnAnalyzeMarket.innerHTML = originalText;
+        if (marketLoadingState) marketLoadingState.classList.add('hidden');
+      }
+    });
+  }
+
+  // Click handler to reset and analyze another niche
+  if (btnResetMarket) {
+    btnResetMarket.addEventListener('click', () => {
+      localStorage.removeItem('market_analysis_data');
+      if (inputMarketNiche) inputMarketNiche.value = '';
+      showMarketForm();
+    });
+  }
+
+  // Initialize
+  verifySession();
+</script>
