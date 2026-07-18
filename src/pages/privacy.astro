@@ -1,0 +1,192 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { ArrowLeft } from 'lucide-astro';
+import * as privacyContent from '../../privacypolicy.md';
+
+const { Content } = privacyContent;
+---
+
+<Layout title="Privacy Policy - PitchPro" description="PitchPro Privacy Policy. We respect your privacy and protect your personal data.">
+  <div class="min-h-screen bg-[#0B0B0F] text-white font-body relative overflow-x-hidden flex flex-col">
+    
+    <!-- Background Glows -->
+    <div class="absolute top-0 right-1/4 w-[600px] h-[600px] bg-pitchpro-accent/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-10 left-10 w-[300px] h-[300px] bg-pitchpro-accent/5 rounded-full blur-[100px] pointer-events-none z-0"></div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0B0B0F]/80 backdrop-blur-md">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        
+        <!-- Logo -->
+        <a href="/" class="flex items-center space-x-3 group">
+          <img 
+            src="/logo.jpeg" 
+            alt="PitchPro Logo" 
+            class="h-8 w-8 rounded-lg object-cover border border-white/10 transition-transform group-hover:scale-105" 
+          />
+          <span class="font-heading font-bold text-lg tracking-tight bg-gradient-to-r from-white via-pitchpro-accent to-pitchpro-accent bg-clip-text text-transparent">
+            PitchPro
+          </span>
+        </a>
+
+        <!-- Back controls -->
+        <a 
+          href="/dashboard"
+          class="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-pitchpro-accent/30 text-gray-300 hover:text-white text-xs font-semibold rounded-xl transition-all duration-200 cursor-pointer"
+        >
+          <ArrowLeft class="h-3.5 w-3.5" />
+          <span>Dashboard</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-12 z-10">
+      <div class="glass-dark p-8 md:p-12 rounded-3xl border border-white/10 shadow-2xl relative">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-pitchpro-accent/5 rounded-full blur-xl pointer-events-none"></div>
+        
+        <div class="content-area">
+          <Content />
+        </div>
+      </div>
+    </main>
+
+    <!-- Premium Corporate Footer -->
+    <footer class="mt-auto shrink-0 border-t border-white/10 bg-[#07070A] relative overflow-hidden pt-12 pb-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <!-- Column 1: Brand -->
+          <div class="space-y-3">
+            <div class="flex items-center space-x-2">
+              <img 
+                src="/logo.jpeg" 
+                alt="PitchPro Logo" 
+                class="h-6 w-6 rounded object-cover border border-white/10 shadow-sm" 
+              />
+              <span class="font-heading font-bold text-white tracking-tight text-base">
+                PitchPro AI
+              </span>
+            </div>
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+              Enterprise-grade pitch deck generation, live rehearsing simulation, and market intelligence portals.
+            </p>
+            <div class="flex items-center gap-1.5 pt-1 text-[9px] bg-white/5 border border-white/10 text-gray-400 px-2 py-0.5 rounded w-max font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              All Systems Operational
+            </div>
+          </div>
+
+          <!-- Column 2: Platform -->
+          <div class="space-y-2">
+            <h4 class="text-[11px] font-bold text-white tracking-wider uppercase">Platform</h4>
+            <ul class="space-y-1.5 text-xs text-gray-400">
+              <li><a href="/app" class="hover:text-pitchpro-accent transition-colors">Pitch Deck Builder</a></li>
+              <li><a href="/market" class="hover:text-pitchpro-accent transition-colors">Market Niche Simulator</a></li>
+              <li><a href="/app?tab=coach" class="hover:text-pitchpro-accent transition-colors">Speech Coach & Q&A</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 3: Compliance & Legal -->
+          <div class="space-y-2">
+            <h4 class="text-[11px] font-bold text-white tracking-wider uppercase">Security & Compliance</h4>
+            <ul class="space-y-1.5 text-xs text-gray-400">
+              <li><a href="/terms" class="hover:text-pitchpro-accent transition-colors">Terms of Service</a></li>
+              <li><a href="/privacy" class="hover:text-pitchpro-accent transition-colors text-pitchpro-accent font-bold">Privacy Policy</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 4: Newsletter -->
+          <div class="space-y-2">
+            <h4 class="text-[11px] font-bold text-white tracking-wider uppercase">Updates</h4>
+            <p class="text-[10px] text-gray-400 leading-normal">Subscribe to product updates and fundraise trends.</p>
+            <div class="flex gap-1.5">
+              <input 
+                type="email" 
+                placeholder="founder@company.com" 
+                class="w-full px-2.5 py-1.5 text-[10px] bg-black/40 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-pitchpro-accent transition-all"
+              />
+              <button 
+                type="button" 
+                class="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white text-[10px] font-semibold rounded-lg border border-white/10 transition-all cursor-pointer whitespace-nowrap"
+                onclick="alert('Thank you for subscribing!');"
+              >
+                Join
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="h-px bg-white/15 mb-4"></div>
+
+        <!-- Bottom Area -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p class="text-[9px] text-gray-500 leading-relaxed text-center sm:text-left max-w-xl">
+            &copy; {new Date().getFullYear()} PitchPro AI Inc. All rights reserved. PitchPro AI is an independent software tool. Market insights, SWOT quadrants, and coaching answers are generated dynamically by large language models. Always verify actual financial projections and consult a legal professional before fundraise execution.
+          </p>
+          <div class="text-[9px] text-gray-500 font-mono flex items-center gap-1 shrink-0">
+            <span>Hosted with</span>
+            <svg class="h-2.5 w-2.5 text-white inline fill-current" viewBox="0 0 115 100">
+              <path d="M57.5 0L115 100H0L57.5 0Z"/>
+            </svg>
+            <span class="font-bold text-white ml-0.5">Vercel Enterprise</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</Layout>
+
+<style is:global>
+  /* Markdown styling inside PitchPro theme container */
+  .content-area h1 {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
+    font-family: 'Outfit', 'Inter', sans-serif;
+  }
+  .content-area h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  .content-area h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0.7));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .content-area p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #9ca3af;
+    margin-bottom: 1.25rem;
+  }
+  .content-area ul {
+    list-style-type: disc;
+    list-style-position: outside;
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+  .content-area li {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+  }
+  .content-area strong {
+    color: #ffffff;
+    font-weight: 600;
+  }
+</style>
