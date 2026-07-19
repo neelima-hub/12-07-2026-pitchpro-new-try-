@@ -122,15 +122,15 @@ import {
 
         <!-- Bottom Profile/Exit -->
         <div class="p-4 sm:p-6 border-t border-white/5 flex items-center justify-between">
-          <div class="flex items-center space-x-2.5">
-            <div id="profile-user-avatar" class="w-8 h-8 rounded-full bg-pitchpro-accent/20 border border-pitchpro-accent/30 flex items-center justify-center font-bold text-xs text-pitchpro-accent">
+          <a href="/dashboard" class="flex items-center space-x-2.5 group hover:opacity-90 transition-all cursor-pointer" title="Back to Dashboard">
+            <div id="profile-user-avatar" class="w-8 h-8 rounded-full bg-pitchpro-accent/20 border border-pitchpro-accent/30 flex items-center justify-center font-bold text-xs text-pitchpro-accent group-hover:border-pitchpro-accent/60 transition-colors">
               U
             </div>
             <div>
-              <p id="profile-user-name" class="text-xs font-semibold text-white">Loading...</p>
+              <p id="profile-user-name" class="text-xs font-semibold text-white group-hover:text-pitchpro-accent transition-colors">Loading...</p>
               <p class="text-[10px] text-gray-500">Free Plan</p>
             </div>
-          </div>
+          </a>
           <a href="/dashboard" class="text-xs text-gray-500 hover:text-white transition-colors flex items-center">
             <ArrowLeft class="h-3.5 w-3.5 mr-1" /> Exit
           </a>
