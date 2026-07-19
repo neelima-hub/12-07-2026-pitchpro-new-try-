@@ -416,7 +416,7 @@ import {
     try {
       const { data, error } = await supabase
         .from('pitch_decks')
-        .select('id, created_at, deck_json')
+        .select('id, created_at, deck_json, artifacts')
         .order('created_at', { ascending: false });
 
       decksLoading.classList.add('hidden');

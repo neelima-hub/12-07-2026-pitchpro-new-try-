@@ -203,7 +203,16 @@ ${competitionFormat}`,
       try {
         const { data: dbData, error: dbError } = await authenticatedSupabase
           .from('pitch_decks')
-          .insert({ user_id: user.id, deck_json: payload })
+          .insert({ 
+            user_id: user.id, 
+            deck_json: payload,
+            artifacts: {
+              presenterNotes: {},
+              judgeQA: [],
+              executiveSummary: "",
+              elevatorPitch: ""
+            }
+          })
           .select('id')
           .single();
         
@@ -280,7 +289,16 @@ ${competitionFormat}`,
       try {
         const { data: dbData, error: dbError } = await authenticatedSupabase
           .from('pitch_decks')
-          .insert({ user_id: user.id, deck_json: fallbackPayload })
+          .insert({ 
+            user_id: user.id, 
+            deck_json: fallbackPayload,
+            artifacts: {
+              presenterNotes: {},
+              judgeQA: [],
+              executiveSummary: "",
+              elevatorPitch: ""
+            }
+          })
           .select('id')
           .single();
         

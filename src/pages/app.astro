@@ -333,6 +333,17 @@ import {
             <h1 class="text-2xl font-heading font-extrabold text-white">Generated Pitch Deck</h1>
             <p class="text-xs text-gray-400">AI structured layout. Click outline slides or use buttons to navigate.</p>
           </div>
+          <div class="flex items-center gap-2">
+            <button 
+              id="btn-save-deck" 
+              class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-semibold rounded-xl border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer"
+              type="button"
+              title="Save Deck and Peripheral Content to Cloud"
+            >
+              <Check class="h-3.5 w-3.5 text-pitchpro-accent" />
+              <span>Save Changes</span>
+            </button>
+          </div>
         </div>
 
         <!-- Workspace Grid -->
@@ -1861,24 +1872,55 @@ import {
       let currentSlideIndex = 0;
       let activeTheme = 'vanguard';
 
-      // Function to persist client-side slide changes back to Supabase database
+      // Function to persist client-side slide changes and peripheral artifacts back to Supabase database
       const updateDbDeck = async () => {
         if (!activeDeck || !activeDeckDbId) return;
+
+        // Package peripheral content into JSONB format
+        const artifactsPayload = {
+          presenterNotes: activeCopy?.presentationScripts || activeDeck?.presenterNotes || {},
+          judgeQA: Array.isArray((window as any).activeQAList) ? (window as any).activeQAList.map((q: any) => ({
+            id: q.id || '',
+            question: q.question || '',
+            answer: q.idealAnswerFramework || q.answer || '',
+            reasonForAsking: q.reasonForAsking || '',
+            idealAnswerFramework: q.idealAnswerFramework || q.answer || ''
+          })) : (activeDeck?.judgeQA || []),
+          executiveSummary: activeCopy?.executiveSummary || activeDeck?.executiveSummary || '',
+          elevatorPitch: activeCopy?.elevatorPitch || activeDeck?.elevatorPitch || ''
+        };
+
         try {
           const { error } = await supabase
             .from('pitch_decks')
-            .update({ deck_json: activeDeck })
+            .update({ 
+              deck_json: activeDeck,
+              artifacts: artifactsPayload
+            })
             .eq('id', activeDeckDbId);
           
           if (error) {
-            console.error('Error updating saved deck in Supabase:', error);
+            console.error('Error updating saved deck and artifacts in Supabase:', error);
           } else {
-            console.log('Successfully updated saved deck in Supabase with ID:', activeDeckDbId);
+            console.log('Successfully updated saved deck and artifacts in Supabase with ID:', activeDeckDbId);
           }
         } catch (err) {
           console.error('Failed to update Supabase deck:', err);
         }
       };
+
+      // Add listener to manual Save Changes button
+      const btnSaveDeck = document.getElementById('btn-save-deck');
+      if (btnSaveDeck) {
+        btnSaveDeck.addEventListener('click', async () => {
+          if (!activeDeckDbId) {
+            showToastMessage("No active cloud deck saved yet. Run analysis first!");
+            return;
+          }
+          await updateDbDeck();
+          showToastMessage("Deck & peripheral artifacts saved successfully!");
+        });
+      }
 
       // Unlocking tabs logic
       const unlockTabs = () => {
@@ -2021,10 +2063,10 @@ import {
           const targetTab = urlParams.get('tab');
           
           if (deckId) {
-            // Load specific saved deck from URL parameter
+            // Load specific saved deck and artifacts from URL parameter
             supabase
               .from('pitch_decks')
-              .select('id, created_at, deck_json')
+              .select('id, created_at, deck_json, artifacts')
               .eq('id', deckId)
               .single()
               .then(({ data, error }) => {
@@ -2035,6 +2077,8 @@ import {
                 }
                 if (data && data.deck_json) {
                   const savedDeck = data.deck_json;
+                  const artifacts = data.artifacts || {};
+
                   generationDone = true;
                   unlockTabs();
                   activeDeckDbId = data.id;
@@ -2046,6 +2090,35 @@ import {
                   }
                   
                   renderDeck(savedDeck);
+
+                  // Extract and bind peripheral UI components with safe fallbacks for older decks
+                  const execSummary = artifacts?.executiveSummary || savedDeck?.executiveSummary || '';
+                  const elevPitch = artifacts?.elevatorPitch || savedDeck?.elevatorPitch || '';
+                  
+                  if (execSummary || elevPitch) {
+                    activeCopy = {
+                      ...(activeCopy || {}),
+                      executiveSummary: execSummary,
+                      elevatorPitch: elevPitch,
+                      presentationScripts: artifacts?.presenterNotes || activeCopy?.presentationScripts || []
+                    };
+                    renderSummary(savedDeck.companyName || 'Startup', execSummary, elevPitch);
+                    localStorage.setItem('pitchpro_activeCopy', JSON.stringify(activeCopy));
+                  }
+
+                  const qaList = artifacts?.judgeQA || savedDeck?.judgeQA || [];
+                  if (Array.isArray(qaList) && qaList.length > 0) {
+                    const mappedQA = qaList.map((q: any) => ({
+                      id: q.id || 'Q&A',
+                      question: q.question,
+                      answer: q.answer || q.idealAnswerFramework || '',
+                      reasonForAsking: q.reasonForAsking || 'Key investor focus area',
+                      idealAnswerFramework: q.idealAnswerFramework || q.answer || ''
+                    }));
+                    renderQA(mappedQA);
+                    (window as any).activeQAList = mappedQA;
+                    localStorage.setItem('pitchpro_activeQA', JSON.stringify(mappedQA));
+                  }
                   
                   // Save to LocalStorage
                   localStorage.setItem('pitchpro_activeDeck', JSON.stringify(savedDeck));
@@ -3206,11 +3279,17 @@ import {
             localStorage.setItem('pitchpro_activeQA', JSON.stringify(qaJSON.predictedJudgeQuestions));
             localStorage.setItem('pitchpro_activeTheme', activeTheme);
             localStorage.setItem('pitchpro_currentSlideIndex', '0');
+            (window as any).activeQAList = qaJSON.predictedJudgeQuestions;
 
             // Render all payloads to the DOM
             renderDeck(deckJSON);
             renderSummary(deckJSON.companyName, copyJSON.executiveSummary, copyJSON.elevatorPitch);
             renderQA(qaJSON.predictedJudgeQuestions);
+
+            // Persist full state (deck slides + peripheral artifacts) to Supabase
+            if (activeDeckDbId) {
+              updateDbDeck();
+            }
 
             // Unlock the dashboard tabs
             generationDone = true;
