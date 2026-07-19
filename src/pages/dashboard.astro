@@ -13,7 +13,8 @@ import {
   Trophy, 
   Folder,
   User,
-  Compass
+  Compass,
+  ChevronDown
 } from 'lucide-astro';
 ---
 
@@ -45,11 +46,11 @@ import {
 
         <!-- User controls -->
         <div class="flex items-center space-x-4">
-          <div class="hidden sm:flex items-center space-x-2.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
-            <div class="w-6 h-6 rounded-full bg-pitchpro-accent/20 flex items-center justify-center text-[10px] font-bold text-pitchpro-accent">
-              <User class="h-3 w-3" />
+          <div class="flex items-center space-x-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full cursor-pointer hover:bg-white/10 transition-colors">
+            <div id="user-badge-avatar" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-semibold text-white">
+              U
             </div>
-            <span id="user-badge-email" class="text-xs text-gray-300 font-mono">Loading...</span>
+            <ChevronDown class="h-3.5 w-3.5 text-gray-400" />
           </div>
 
           <button 
@@ -70,7 +71,7 @@ import {
       <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 id="welcome-title" class="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-white">
-            Welcome back, Innovator! 👋
+            Welcome back, Innovator.
           </h1>
           <p class="text-sm text-gray-400 mt-1">
             Build, test, and polish your pitches from your central workspace.
@@ -79,7 +80,7 @@ import {
         <div>
           <a 
             href="/app"
-            class="inline-flex items-center gap-2 px-5 py-3 bg-pitchpro-accent hover:bg-pitchpro-accent-hover text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-pitchpro-accent/25 hover:shadow-pitchpro-accent/40 active:scale-[0.98]"
+            class="inline-flex items-center gap-2 px-5 py-3 bg-pitchpro-accent hover:bg-pitchpro-accent-hover text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-[0.98]"
           >
             <Plus class="h-4.5 w-4.5" />
             <span>Create New Pitch</span>
@@ -93,7 +94,7 @@ import {
         <div class="glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/40 bg-white/[0.01] hover:bg-white/[0.03] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(108,99,255,0.06)] transition-all duration-300 flex items-center justify-between group">
           <div class="space-y-1">
             <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Saved Decks</p>
-            <h3 id="stat-total-decks" class="text-2xl sm:text-3xl font-bold font-mono text-white">--</h3>
+            <h3 id="stat-total-decks" class="text-3xl font-bold text-white">--</h3>
           </div>
           <div class="w-10 h-10 rounded-xl bg-pitchpro-accent/15 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-all duration-300 group-hover:scale-110 group-hover:bg-pitchpro-accent group-hover:text-white">
             <Folder class="h-5 w-5" />
@@ -104,7 +105,7 @@ import {
         <div class="glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/40 bg-white/[0.01] hover:bg-white/[0.03] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(108,99,255,0.06)] transition-all duration-300 flex items-center justify-between group">
           <div class="space-y-1">
             <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Rehearsal Score</p>
-            <h3 id="stat-coach-score" class="text-2xl sm:text-3xl font-bold font-mono text-pitchpro-success">N/A</h3>
+            <h3 id="stat-coach-score" class="text-3xl font-bold text-gray-500">N/A</h3>
           </div>
           <div class="w-10 h-10 rounded-xl bg-pitchpro-success/15 border border-pitchpro-success/25 flex items-center justify-center text-pitchpro-success transition-all duration-300 group-hover:scale-110 group-hover:bg-pitchpro-success group-hover:text-white">
             <Trophy class="h-5 w-5" />
@@ -115,7 +116,7 @@ import {
         <div class="glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/40 bg-white/[0.01] hover:bg-white/[0.03] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(108,99,255,0.06)] transition-all duration-300 flex items-center justify-between group">
           <div class="space-y-1">
             <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Account Plan</p>
-            <h3 class="text-2xl sm:text-3xl font-bold text-white">Free Plan</h3>
+            <h3 class="text-3xl font-bold text-white">Free Plan</h3>
           </div>
           <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 transition-all duration-300 group-hover:scale-110 group-hover:bg-white/10 group-hover:text-white">
             <Compass class="h-5 w-5" />
@@ -131,9 +132,7 @@ import {
           <!-- Launch Card 1 -->
           <a href="/app?tab=upload" class="group glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/50 bg-white/[0.01] hover:bg-white/[0.03] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(108,99,255,0.08)] transition-all duration-300 flex flex-col justify-between min-h-[140px]">
             <div class="space-y-2">
-              <div class="w-9 h-9 rounded-lg bg-pitchpro-accent/10 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-all duration-300 group-hover:scale-110 group-hover:bg-pitchpro-accent group-hover:text-white">
-                <Layers class="h-4.5 w-4.5" />
-              </div>
+              <Layers class="w-7 h-7 text-pitchpro-accent mb-2 transition-transform duration-300 group-hover:scale-110" />
               <h3 class="text-sm font-bold text-white group-hover:text-pitchpro-accent transition-colors">Pitch Deck Builder</h3>
               <p class="text-[11px] text-gray-400 leading-relaxed">Assemble structures, outline financials, and generate raw slide deck content.</p>
             </div>
@@ -145,9 +144,7 @@ import {
           <!-- Launch Card 2 -->
           <a href="/market" class="group glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/50 bg-white/[0.01] hover:bg-white/[0.03] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(108,99,255,0.08)] transition-all duration-300 flex flex-col justify-between min-h-[140px]">
             <div class="space-y-2">
-              <div class="w-9 h-9 rounded-lg bg-pitchpro-accent/10 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-all duration-300 group-hover:scale-110 group-hover:bg-pitchpro-accent group-hover:text-white">
-                <Sparkles class="h-4.5 w-4.5" />
-              </div>
+              <Sparkles class="w-7 h-7 text-pitchpro-accent mb-2 transition-transform duration-300 group-hover:scale-110" />
               <h3 class="text-sm font-bold text-white group-hover:text-pitchpro-accent transition-colors">Market Analyzer</h3>
               <p class="text-[11px] text-gray-400 leading-relaxed">Scan target demographics, outline key competitor vectors, and analyze SWOT segments.</p>
             </div>
@@ -159,9 +156,7 @@ import {
           <!-- Launch Card 3 -->
           <a href="/app?tab=coach" class="group glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/50 bg-white/[0.01] hover:bg-white/[0.03] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(108,99,255,0.08)] transition-all duration-300 flex flex-col justify-between min-h-[140px]">
             <div class="space-y-2">
-              <div class="w-9 h-9 rounded-lg bg-pitchpro-accent/10 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-all duration-300 group-hover:scale-110 group-hover:bg-pitchpro-accent group-hover:text-white">
-                <Mic class="h-4.5 w-4.5" />
-              </div>
+              <Mic class="w-7 h-7 text-pitchpro-accent mb-2 transition-transform duration-300 group-hover:scale-110" />
               <h3 class="text-sm font-bold text-white group-hover:text-pitchpro-accent transition-colors">Rehearsal Coach</h3>
               <p class="text-[11px] text-gray-400 leading-relaxed">Practice pitch delivery into your mic. AI tracks fillers, timing, and rates confidence.</p>
             </div>
@@ -173,9 +168,7 @@ import {
           <!-- Launch Card 4 -->
           <a href="/app?tab=summary" class="group glass-dark p-5 rounded-2xl border border-white/10 hover:border-pitchpro-accent/50 bg-white/[0.01] hover:bg-white/[0.03] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(108,99,255,0.08)] transition-all duration-300 flex flex-col justify-between min-h-[140px]">
             <div class="space-y-2">
-              <div class="w-9 h-9 rounded-lg bg-pitchpro-accent/10 border border-pitchpro-accent/25 flex items-center justify-center text-pitchpro-accent transition-all duration-300 group-hover:scale-110 group-hover:bg-pitchpro-accent group-hover:text-white">
-                <FileText class="h-4.5 w-4.5" />
-              </div>
+              <FileText class="w-7 h-7 text-pitchpro-accent mb-2 transition-transform duration-300 group-hover:scale-110" />
               <h3 class="text-sm font-bold text-white group-hover:text-pitchpro-accent transition-colors">Executive Summaries</h3>
               <p class="text-[11px] text-gray-400 leading-relaxed">Compile structural outlines, elevator copy summaries, and Q&A logs for stakeholders.</p>
             </div>
@@ -353,7 +346,7 @@ import {
 
   // DOM Elements
   const welcomeTitle = document.getElementById('welcome-title');
-  const userBadgeEmail = document.getElementById('user-badge-email');
+  const userBadgeAvatar = document.getElementById('user-badge-avatar');
   const btnLogout = document.getElementById('btn-logout');
   
   const statTotalDecks = document.getElementById('stat-total-decks');
@@ -375,6 +368,23 @@ import {
   const deleteConfirmBtn = document.getElementById('delete-modal-confirm');
   const deleteSpinner = document.getElementById('delete-spinner');
 
+  // Time ago helper for metadata strings
+  function getTimeAgo(dateStr: string) {
+    if (!dateStr) return 'recently';
+    const now = new Date().getTime();
+    const past = new Date(dateStr).getTime();
+    const diffInSeconds = Math.floor((now - past) / 1000);
+
+    if (diffInSeconds < 60) return 'just now';
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 30) return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+    return 'recently';
+  }
+
   // Verify Session & Redirect if not logged in
   async function verifySession() {
     const { data: { session } } = await supabase.auth.getSession();
@@ -383,12 +393,13 @@ import {
       return;
     }
     
-    // Set user profile greetings
+    // Set user profile greetings & avatar initials
     const email = session.user.email;
     const name = session.user.user_metadata?.full_name || email?.split('@')[0] || 'Innovator';
+    const initials = name ? name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'U';
     
-    if (welcomeTitle) welcomeTitle.textContent = `Welcome back, ${name}! 👋`;
-    if (userBadgeEmail) userBadgeEmail.textContent = email || 'Authenticated';
+    if (welcomeTitle) welcomeTitle.textContent = `Welcome back, ${name}.`;
+    if (userBadgeAvatar) userBadgeAvatar.textContent = initials;
 
     // Fetch user decks
     fetchUserDecks();
@@ -465,8 +476,10 @@ import {
     if (statCoachScore) {
       if (hasScores) {
         statCoachScore.textContent = `${highestScore}%`;
+        statCoachScore.className = 'text-3xl font-bold text-white';
       } else {
         statCoachScore.textContent = 'N/A';
+        statCoachScore.className = 'text-3xl font-bold text-gray-500';
       }
     }
   }
@@ -507,7 +520,9 @@ import {
     decksGrid.innerHTML = displayedDecks.map(item => {
       const deck = item.deck_json;
       const companyName = deck?.companyName || 'Untitled Project';
-      const tagline = deck?.tagline || 'AI generated pitch structures';
+      const templateName = deck?.template || 'Standard Venture Template';
+      const timeAgoStr = getTimeAgo(item.created_at);
+      const metadataStr = `Updated ${timeAgoStr} • ${templateName}`;
       const slideCount = deck?.slides?.length || 0;
       const dateStr = new Date(item.created_at).toLocaleDateString('en-US', {
         month: 'short',
@@ -532,7 +547,7 @@ import {
             </div>
             
             <h3 class="text-base font-bold text-white group-hover:text-pitchpro-accent transition-colors truncate pr-4">${companyName}</h3>
-            <p class="text-xs text-gray-400 mt-1 line-clamp-2 leading-normal">${tagline}</p>
+            <p class="text-xs text-gray-400 mt-1 truncate leading-normal">${metadataStr}</p>
           </div>
 
           <div class="px-5 py-3.5 bg-white/[0.02] border-t border-white/5 flex items-center justify-between gap-4">
@@ -623,7 +638,7 @@ import {
     deleteCancelBtn.addEventListener('click', closeDeleteModal);
   }
   if (deleteModal) {
-    deleteModal.addEventListener('click', (e) => {
+    deleteModal.addEventListener('click', (e: Event) => {
       if (e.target === deleteModal) closeDeleteModal();
     });
   }
